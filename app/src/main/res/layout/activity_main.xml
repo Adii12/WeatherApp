@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/temperature_field"
         android:layout_centerHorizontal="true"
-        android:text="*soare*"
+
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="70sp"
         android:textColor="#FFF"/>
