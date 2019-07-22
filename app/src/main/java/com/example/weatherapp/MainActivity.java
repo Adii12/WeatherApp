@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     TextView weatherIcon, currentTemperature, cityField, updateField;
     Typeface weatherFont;
     EditText cityChange;
-    String city;
+    String city, lastUpdated;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,27 +28,30 @@ public class MainActivity extends AppCompatActivity {
         if(Function.isNetworkAvailable(getApplicationContext())==false)
             Toast.makeText(getApplicationContext(),"No Internet Connection", Toast.LENGTH_LONG).show();
 
-
+        updateField=findViewById(R.id.updated_field);
+        cityField=findViewById(R.id.cityField);
         weatherFont = getResources().getFont(R.font.icons);
         weatherIcon=findViewById(R.id.weather_icon);
         weatherIcon.setTypeface(weatherFont);
-
+        cityField.setText("Enter city below");
         currentTemperature=findViewById(R.id.temperature_field);
         weatherIcon.setText(Html.fromHtml(Function.setIcon(800,1485720272,1485766550)));
         currentTemperature.setText("28 ºC");
+        lastUpdated = new SimpleDateFormat("dd/MM HH:mm:ss").format(new Date());
+        updateField.setText("Last Updated: "+lastUpdated);
 
     }
 
     public void ChangeCity(View view){
-        cityField=findViewById(R.id.cityField);
+
         cityChange=findViewById(R.id.cityText);
         city = cityChange.getText().toString();
         cityField.setText(city);
+        Toast.makeText(getApplicationContext(),"City Changed!",Toast.LENGTH_SHORT).show();
     }
 
     public void Update(View view){
-        String lastUpdated = new SimpleDateFormat("dd/MM HH:mm:ss").format(new Date());
-        updateField=findViewById(R.id.updated_field);
+        lastUpdated = new SimpleDateFormat("dd/MM HH:mm:ss").format(new Date());
         updateField.setText("Last Updated: "+lastUpdated);
     }
 }
