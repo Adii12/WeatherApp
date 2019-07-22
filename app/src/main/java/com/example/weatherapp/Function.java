@@ -1,8 +1,12 @@
 package com.example.weatherapp;
 
+
     import android.content.Context;
     import android.net.ConnectivityManager;
     import android.net.NetworkInfo;
+    import android.view.View;
+    import android.widget.TextView;
+
     import java.io.*;
     import java.net.*;
     import java.util.Date;
@@ -23,15 +27,15 @@ public class Function {
 
 
     //TO DO :::
-    public static void fetchData(String city) {
+    public static void getConnection(String city) {
         final String API_KEY="2397cac5640f1ba782245157aab0343b";
-
+        final String urlkey = "http://api.openweathermap.org/data/2.5/weather?q=";
 
         URL url;
         HttpURLConnection connection = null;
 
         try {
-            url = new URL("http://api.openweathermap.org/data/2.5/weather?q="+city+"&appid="+API_KEY);
+            url = new URL(urlkey+city+"&appid="+API_KEY);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("content-type", "application/json; charset=utf-8");
             connection.setRequestProperty("Content-Language", "en-US");
@@ -58,6 +62,7 @@ public class Function {
 
         if(actualId==800){
             long currentTime=new Date().getTime();
+
             if(currentTime>=sunrise && currentTime<sunset){
                 icon = "&xf00d";
             }
