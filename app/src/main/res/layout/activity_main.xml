@@ -25,7 +25,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/cityField"
         android:layout_centerHorizontal="true"
-        android:onClick="Update"
         android:text="Update"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#FFF" />
@@ -45,7 +44,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="28.51 ºC"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="#FFF"
         android:textSize="70sp"
@@ -53,31 +51,26 @@
         app:autoSizeTextType="none"
         app:fontFamily="sans-serif" />
 
-    <EditText
-        android:id="@+id/cityText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:hint="Enter city name"
-        android:onClick="ChangeCity"
-        android:layout_marginRight="10sp"
-        android:layout_toLeftOf="@id/button"
-        />
-
-
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
+        android:layout_centerHorizontal="true"
         android:fadeScrollbars="false"
-        android:onClick="ChangeCity"
         android:text="Change City"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:typeface="sans"
         android:background="@drawable/button"
         android:textColor="#fff"
         android:padding="9dp"/>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:indeterminateTint="#fff"
+        />
 
 </RelativeLayout>

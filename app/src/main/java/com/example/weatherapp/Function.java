@@ -26,17 +26,15 @@ public class Function {
     }
 
 
-    //TO DO :::
-    public static void getConnection(String city) {
-        final String API_KEY="2397cac5640f1ba782245157aab0343b";
-        final String urlkey = "http://api.openweathermap.org/data/2.5/weather?q=";
+    //realizeaza conexiunea cu api
+    public static String getConnection(String targetURL) {
 
         URL url;
         HttpURLConnection connection = null;
 
         try {
-            url = new URL(urlkey+city+"&appid="+API_KEY);
-            connection = (HttpURLConnection) url.openConnection();
+            url = new URL(targetURL);
+            connection = (HttpURLConnection)url.openConnection();
             connection.setRequestProperty("content-type", "application/json; charset=utf-8");
             connection.setRequestProperty("Content-Language", "en-US");
             connection.setUseCaches(false);
@@ -45,8 +43,35 @@ public class Function {
 
             InputStream is;
 
+            int status = connection.getResponseCode();
+
+            if(status != HttpURLConnection.HTTP_OK){
+                is=connection.getErrorStream();
+            }
+            else{
+                is=connection.getInputStream();
+            }
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+            String line="";
+
+            StringBuffer response = new StringBuffer();
+
+
+
+            while( (line=br.readLine()) != null ){
+                response.append(line);
+                response.append("\n");
+           }
+
+            br.close();
+
+            return response.toString();
+
         }catch (Exception ex){
-            //return null;
+            ex.printStackTrace();
+            return "";
         }finally {
             if(connection!=null){
                 connection.disconnect();
