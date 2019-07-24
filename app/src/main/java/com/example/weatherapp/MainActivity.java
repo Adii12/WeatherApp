@@ -2,7 +2,6 @@ package com.example.weatherapp;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,18 +14,15 @@ import android.widget.EditText;
 import android.graphics.Typeface;
 import android.widget.Toast;
 import android.view.View;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
     ProgressBar loader;
-    TextView weatherIcon, currentTemperature, cityField, updateField;
+    TextView weatherIcon, currentTemperature, cityField, updateField, infoField;
     Typeface weatherFont;
     Button selectCity;
 
@@ -40,16 +36,17 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        cityField=(TextView)findViewById(R.id.cityField);
+        cityField=findViewById(R.id.cityField);
         updateField=findViewById(R.id.updated_field);
         weatherIcon=findViewById(R.id.weather_icon);
         currentTemperature=findViewById(R.id.temperature_field);
         selectCity=findViewById(R.id.button);
-        loader=(ProgressBar)findViewById(R.id.progress);
+        loader=findViewById(R.id.progress);
+        infoField=findViewById(R.id.info_field);
 
         weatherFont = getResources().getFont(R.font.icons);
         weatherIcon.setTypeface(weatherFont);
-        weatherIcon.setText(Html.fromHtml(Function.setIcon(800,1485720272,1485766550)));
+
 
         loadTask(city);
 
@@ -130,9 +127,14 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject sys = json.getJSONObject("sys");
                     DateFormat df = DateFormat.getTimeInstance();
 
-                    cityField.setText(json.getString("name"));
-                    currentTemperature.setText(Integer.toString(main.getInt("temp")));
+                    cityField.setText(json.getString("name")+", "+sys.getString("country"));
                     updateField.setText("Last updated: "+df.format(new Date(json.getLong("dt")*1000)));
+                    currentTemperature.setText(Integer.toString(main.getInt("temp"))+"º");
+                    infoField.setText(details.getString("description"));
+                    weatherIcon.setText(Html.fromHtml(Function.setIcon(details.getInt("id"),sys.getLong("sunrise")*1000,sys.getLong("sunset")*1000)));
+
+
+
                     loader.setVisibility(View.GONE);
                 }
             }catch (JSONException e){

@@ -5,6 +5,7 @@ package com.example.weatherapp;
     import android.net.ConnectivityManager;
     import android.net.NetworkInfo;
     import android.view.View;
+    import android.widget.RelativeLayout;
     import android.widget.TextView;
 
     import java.io.*;
@@ -81,6 +82,8 @@ public class Function {
 
     }
 
+
+
     public static String setIcon(int actualId, long sunrise, long sunset){
         int id = actualId/100;
         String icon="";
@@ -89,36 +92,36 @@ public class Function {
             long currentTime=new Date().getTime();
 
             if(currentTime>=sunrise && currentTime<sunset){
-                icon = "&xf00d";
+                icon = "&#xf00d"; //sunny day
             }
             else{
-                icon= "&#xf02e";
+                icon= "&#xf02e"; //clear night
             }
         }
         else{
             switch (id){
                 case 2:
-                    icon="&#xf01e";
+                    icon="&#xf01e"; //thunderstorm
                     break;
 
                 case 3:
-                    icon="&#xf01e";
+                    icon="&#xf01c"; //drizzle
                     break;
 
                 case 5:
-                    icon="&#xf019";
+                    icon="&#xf019"; //rain
                     break;
 
                 case 6:
-                    icon="&#xf01b";
+                    icon="&#xf01b"; //snow
                     break;
 
                 case 7:
-                    icon="&#xf01c";
+                    icon="&#xf014"; //fog
                     break;
 
                 case 8:
-                    icon="&#xf014";
+                    icon="&#xf013"; //cloudy
                     break;
             }
         }
