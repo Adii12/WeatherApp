@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -17,12 +19,14 @@ import android.view.View;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
     ProgressBar loader;
-    TextView weatherIcon, currentTemperature, cityField, updateField, infoField;
+    TextView weatherIcon, currentTemperature, cityField, updateField, infoField, dateField;
     Typeface weatherFont;
     Button selectCity;
 
@@ -35,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-
+        dateField=findViewById(R.id.date_field);
         cityField=findViewById(R.id.cityField);
         updateField=findViewById(R.id.updated_field);
         weatherIcon=findViewById(R.id.weather_icon);
@@ -81,7 +85,16 @@ public class MainActivity extends AppCompatActivity {
            }
        });
 
+        final GestureDetector mDetector = new GestureDetector(MainActivity.this, new MyGestureDetector());
 
+        weatherIcon.setOnTouchListener(new View.OnTouchListener(){
+
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                return mDetector.onTouchEvent(motionEvent);
+
+            }
+        });
 
     }
 
@@ -99,18 +112,21 @@ public class MainActivity extends AppCompatActivity {
 
     class getWeather extends AsyncTask<String, Void, String>{
 
-        String xml;
+
 
         @Override
         protected void onPreExecute(){
             super.onPreExecute();
             loader.setVisibility(View.VISIBLE);
+            cityField.setText("Loading...");
+            currentTemperature.setText("");
+            infoField.setText("");
         }
 
 
         protected String doInBackground(String...args){
 
-            xml = Function.getConnection("http://api.openweathermap.org/data/2.5/weather?q="+args[0]+"&units=metric&appid=2397cac5640f1ba782245157aab0343b");
+            String xml = Function.getConnection("http://api.openweathermap.org/data/2.5/weather?q="+args[0]+"&units=metric&appid=2397cac5640f1ba782245157aab0343b");
             return xml;
 
         }
@@ -125,12 +141,17 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject details = json.getJSONArray("weather").getJSONObject(0);
                     JSONObject main = json.getJSONObject("main");
                     JSONObject sys = json.getJSONObject("sys");
-                    DateFormat df = DateFormat.getTimeInstance();
+                    SimpleDateFormat formatHour = new SimpleDateFormat("HH:mm");
+                    Date hours = new Date(System.currentTimeMillis());
+
+                    SimpleDateFormat formatDate = new SimpleDateFormat("dd/MM");
+                    Date date = new Date(System.currentTimeMillis());
 
                     cityField.setText(json.getString("name")+", "+sys.getString("country"));
-                    updateField.setText("Last updated: "+df.format(new Date(json.getLong("dt")*1000)));
-                    currentTemperature.setText(Integer.toString(main.getInt("temp"))+"º");
-                    infoField.setText(details.getString("description"));
+                    dateField.setText(formatDate.format(date));
+                    updateField.setText(formatHour.format(hours));
+                    currentTemperature.setText(main.getInt("temp")+"º");
+                    infoField.setText(details.getString("main"));
                     weatherIcon.setText(Html.fromHtml(Function.setIcon(details.getInt("id"),sys.getLong("sunrise")*1000,sys.getLong("sunset")*1000)));
 
 
@@ -138,8 +159,80 @@ public class MainActivity extends AppCompatActivity {
                     loader.setVisibility(View.GONE);
                 }
             }catch (JSONException e){
-                Toast.makeText(getApplicationContext(), "Error. Check city!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Error. Wrong city name!", Toast.LENGTH_SHORT).show();
             }
         }
     }
+
+
+
+    public class MyGestureDetector implements GestureDetector.OnGestureListener{
+
+        private static final int MIN_DISTANCE=10;
+        private static final int VELOCITY_THRESHOLD=100;
+
+        @Override
+        public boolean onDown(MotionEvent motionEvent) {
+            return false;
+        }
+
+        @Override
+        public void onShowPress(MotionEvent motionEvent) {
+
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent motionEvent) {
+            return false;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+            return false;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent motionEvent) {
+
+        }
+
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
+            boolean result=false;
+
+           try {
+               float diffY = event2.getY() - event1.getY();
+               float diffx = event2.getX() - event2.getY();
+
+               if(Math.abs(diffx)>Math.abs(diffY)){
+                   if(Math.abs(diffx)>MIN_DISTANCE && Math.abs(velocityX)>VELOCITY_THRESHOLD){
+                       if(diffx>0){
+                           //swipe right
+                       }
+                       else {
+                           //swipe left
+                       }
+                       result=true;
+                   }
+               }else if(Math.abs(diffY)>MIN_DISTANCE && Math.abs(velocityY)>VELOCITY_THRESHOLD){
+                   if(diffY>0){
+                       loadTask(city);
+                   }
+                   else{
+                       //swipe top
+                   }
+
+                   result=true;
+               }
+
+           }catch (Exception ex){
+               ex.printStackTrace();
+           }
+           return result;
+        }
+
+
+    }
+
+
 }

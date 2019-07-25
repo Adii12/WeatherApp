@@ -10,65 +10,103 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#415385"
+        android:background="@drawable/gradient"
         android:padding="30dp"
         android:id="@+id/layout">
 
 
         <TextView
-            android:id="@+id/cityField"
+            android:id="@+id/date_field"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#FFF"
+            android:textSize="30sp"
+            android:textColor="#fff"
+            android:text="25/07"
+            android:layout_marginBottom="-10dp"
             />
 
         <TextView
             android:id="@+id/updated_field"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/cityField"
-            android:layout_centerHorizontal="true"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="#FFF" />
+            android:layout_below="@id/date_field"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textStyle="bold"
+            android:textSize="60sp"
+            android:text="06:00"
+            android:textColor="#FFF"
+            android:layout_marginTop="-10dp"/>
+
 
         <TextView
             android:id="@+id/weather_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@id/temperature_field"
+            android:layout_below="@id/updated_field"
             android:layout_centerHorizontal="true"
-            android:textColor="#27314F"
+            android:textColor="#FFF"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="70sp"
+            android:textSize="200sp"
             />
 
-        <TextView
-            android:id="@+id/temperature_field"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@id/info_field"
-            android:layout_centerVertical="true"
-            android:padding="0dp"
-            android:text="30º"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="#FFF"
-            android:textSize="70sp"
-            android:visibility="visible"
-            app:autoSizeTextType="none"
-            app:fontFamily="sans-serif" />
+            android:orientation="horizontal"
+            android:layout_below="@id/weather_icon"
+            android:showDividers="middle"
+            android:divider="@android:color/white"
+            android:layout_marginTop="30dp">
+             <TextView
+                android:id="@+id/temperature_field"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                 android:paddingLeft="10dp"
+                android:text="30º"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="#FFF"
+                android:textSize="70sp"
+                android:visibility="visible"
+                app:fontFamily="sans-serif" />
 
-        <TextView
-            android:id="@+id/info_field"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:textColor="#e3d594"
-            android:textSize="30sp"
-            android:layout_marginLeft="30dp"
-            android:textAllCaps="true"/>
+
+            <LinearLayout
+                android:paddingLeft="10dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/info_field"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="cloudy"
+                    android:autoSizeMinTextSize="5sp"
+                    android:autoSizeMaxTextSize="60sp"
+                    android:autoSizeStepGranularity="2sp"
+                    android:textAllCaps="true"
+                    android:textColor="#e3d594"
+                    android:textSize="40sp"
+                    app:fontFamily="sans-serif-medium" />
+
+                <TextView
+                    android:id="@+id/cityField"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#FFF"
+                    android:textSize="20sp"
+                    android:text="Targu-Mures, RO"
+                    />
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
 
         <Button
             android:id="@+id/button"
@@ -94,4 +132,6 @@
         />
 
     </RelativeLayout>
+
+
 </ScrollView>
