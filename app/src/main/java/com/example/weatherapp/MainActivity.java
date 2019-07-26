@@ -1,44 +1,54 @@
 package com.example.weatherapp;
 
+
+import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Toast;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
-import android.os.Bundle;
+import android.os.Build;
 import android.text.Html;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.EditText;
 import android.graphics.Typeface;
-import android.widget.Toast;
 import android.view.View;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity {
-
+public class MainActivity extends AppCompatActivity implements GestureDetector.OnGestureListener {
+    GestureDetector gestureDetector;
     ProgressBar loader;
-    TextView weatherIcon, currentTemperature, cityField, updateField, infoField, dateField;
+    TextView weatherIcon, currentTemperature, cityField, updateField, infoField, dateField, humidityField, pressureField, windField, maxminField, sunriseField, sunsetField;
     Typeface weatherFont;
     Button selectCity;
+    LinearLayout temperatureLayout, moreDetailsLayout;
 
     String city="targu-mures";
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide(); //face aplicatia fullscreen
         setContentView(R.layout.activity_main);
 
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
+        gestureDetector = new GestureDetector(this,this);
+        temperatureLayout=findViewById(R.id.temperatureLayout);
+        moreDetailsLayout=findViewById(R.id.moredetails_layout);
         dateField=findViewById(R.id.date_field);
         cityField=findViewById(R.id.cityField);
         updateField=findViewById(R.id.updated_field);
@@ -48,10 +58,17 @@ public class MainActivity extends AppCompatActivity {
         loader=findViewById(R.id.progress);
         infoField=findViewById(R.id.info_field);
 
+        humidityField=findViewById(R.id.humidity_field);
+        pressureField=findViewById(R.id.pressure_field);
+        windField=findViewById(R.id.wind_field);
+        maxminField=findViewById(R.id.maxmin_field);
+        sunriseField=findViewById(R.id.sunrise_field);
+        sunsetField=findViewById(R.id.sunset_field);
+
         weatherFont = getResources().getFont(R.font.icons);
         weatherIcon.setTypeface(weatherFont);
 
-
+        moreDetailsLayout.setVisibility(View.GONE);
         loadTask(city);
 
        selectCity.setOnClickListener(new View.OnClickListener(){
@@ -85,17 +102,15 @@ public class MainActivity extends AppCompatActivity {
            }
        });
 
-        final GestureDetector mDetector = new GestureDetector(MainActivity.this, new MyGestureDetector());
 
-        weatherIcon.setOnTouchListener(new View.OnTouchListener(){
 
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                return mDetector.onTouchEvent(motionEvent);
 
-            }
-        });
+    }
 
+    protected void onResume(){
+        super.onResume();
+        Toast.makeText(MainActivity.this, "Refreshing...", Toast.LENGTH_SHORT).show();
+        loadTask(city);
     }
 
 
@@ -151,9 +166,16 @@ public class MainActivity extends AppCompatActivity {
                     dateField.setText(formatDate.format(date));
                     updateField.setText(formatHour.format(hours));
                     currentTemperature.setText(main.getInt("temp")+"º");
-                    infoField.setText(details.getString("main"));
+                    infoField.setText(details.getString("description"));
                     weatherIcon.setText(Html.fromHtml(Function.setIcon(details.getInt("id"),sys.getLong("sunrise")*1000,sys.getLong("sunset")*1000)));
 
+                    humidityField.setText("Humidity: "+main.getString("humidity")+"%");
+                    pressureField.setText("Pressure: "+main.getString("pressure")+"hpa");
+                    windField.setText("Wind: "+json.getJSONObject("wind").getString("speed")+"m/s");
+
+                    maxminField.setText("Min/Max: "+main.getInt("temp_min")+"/"+main.getInt("temp_max")+"º");
+                    sunriseField.setText("Sunrise: "+formatHour.format(sys.getLong("sunrise")*1000));
+                    sunsetField.setText("Sunset: "+formatHour.format(sys.getLong("sunset")*1000));
 
 
                     loader.setVisibility(View.GONE);
@@ -164,75 +186,82 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void showDetails(){
+        temperatureLayout.setVisibility(View.GONE);
+        moreDetailsLayout.setVisibility(View.VISIBLE);
+    }
 
-
-    public class MyGestureDetector implements GestureDetector.OnGestureListener{
-
-        private static final int MIN_DISTANCE=10;
-        private static final int VELOCITY_THRESHOLD=100;
-
-        @Override
-        public boolean onDown(MotionEvent motionEvent) {
-            return false;
-        }
-
-        @Override
-        public void onShowPress(MotionEvent motionEvent) {
-
-        }
-
-        @Override
-        public boolean onSingleTapUp(MotionEvent motionEvent) {
-            return false;
-        }
-
-        @Override
-        public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
-            return false;
-        }
-
-        @Override
-        public void onLongPress(MotionEvent motionEvent) {
-
-        }
-
-        @Override
-        public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
-            boolean result=false;
-
-           try {
-               float diffY = event2.getY() - event1.getY();
-               float diffx = event2.getX() - event2.getY();
-
-               if(Math.abs(diffx)>Math.abs(diffY)){
-                   if(Math.abs(diffx)>MIN_DISTANCE && Math.abs(velocityX)>VELOCITY_THRESHOLD){
-                       if(diffx>0){
-                           //swipe right
-                       }
-                       else {
-                           //swipe left
-                       }
-                       result=true;
-                   }
-               }else if(Math.abs(diffY)>MIN_DISTANCE && Math.abs(velocityY)>VELOCITY_THRESHOLD){
-                   if(diffY>0){
-                       loadTask(city);
-                   }
-                   else{
-                       //swipe top
-                   }
-
-                   result=true;
-               }
-
-           }catch (Exception ex){
-               ex.printStackTrace();
-           }
-           return result;
-        }
+    public void showTemp(){
+        temperatureLayout.setVisibility(View.VISIBLE);
+        moreDetailsLayout.setVisibility(View.GONE);
 
 
     }
 
+    @Override
+    public boolean onFling(MotionEvent motionEvent1, MotionEvent motionEvent2, float X, float Y) {
+        if (motionEvent1.getY() - motionEvent2.getY() > 50) {
+            Toast.makeText(MainActivity.this, "You Swiped up!", Toast.LENGTH_LONG).show();
+            return true;
+        }
+
+        if (motionEvent2.getY() - motionEvent1.getY() > 50) {
+            Toast.makeText(MainActivity.this, "Refreshing...", Toast.LENGTH_SHORT).show();
+            loadTask(city);
+            return true;
+        }
+
+        if (motionEvent1.getX() - motionEvent2.getX() > 50) {
+            Toast.makeText(MainActivity.this, "You Swiped Left!", Toast.LENGTH_LONG).show();
+            showDetails();
+            return true;
+        }
+
+        if (motionEvent2.getX() - motionEvent1.getX() > 50) {
+            Toast.makeText(MainActivity.this, "You Swiped Right!", Toast.LENGTH_LONG).show();
+
+            showTemp();
+            return true;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public void onLongPress(MotionEvent arg0) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent arg0, MotionEvent arg1, float arg2, float arg3) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent arg0) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent arg0) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        // TODO Auto-generated method stub
+        return gestureDetector.onTouchEvent(motionEvent);
+    }
+
+    @Override
+    public boolean onDown(MotionEvent arg0) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
 }
+
+
+
