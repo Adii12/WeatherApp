@@ -121,7 +121,7 @@ public class Function {
                     break;
 
                 case 8:
-                    icon="&#xf013"; //cloudy
+                    icon="&#xf002"; //cloudy
                     break;
             }
         }

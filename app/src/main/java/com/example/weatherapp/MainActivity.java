@@ -21,8 +21,15 @@ import android.widget.TextView;
 import android.widget.EditText;
 import android.graphics.Typeface;
 import android.view.View;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -127,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
     class getWeather extends AsyncTask<String, Void, String>{
 
-
+        WeatherJSON weather = new WeatherJSON();
 
         @Override
         protected void onPreExecute(){
@@ -141,48 +148,54 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
         protected String doInBackground(String...args){
 
-            String xml = Function.getConnection("http://api.openweathermap.org/data/2.5/weather?q="+args[0]+"&units=metric&appid=2397cac5640f1ba782245157aab0343b");
-            return xml;
+            String jsonString = Function.getConnection("http://api.openweathermap.org/data/2.5/weather?q="+args[0]+"&units=metric&appid=2397cac5640f1ba782245157aab0343b");
+            ObjectMapper mapper = new ObjectMapper();
 
+            try{
+                weather = mapper.readValue(jsonString,WeatherJSON.class);
+            }catch (JsonParseException e){
+                e.printStackTrace();
+            }catch (JsonMappingException e){
+                e.printStackTrace();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+
+
+            return jsonString;
         }
 
 
         @Override
-        protected void onPostExecute(String xml){
-            try{
-                JSONObject json = new JSONObject(xml);
+        protected void onPostExecute(String jsonString){
+            int temp = (int)Math.round(weather.getMain().getTemp());
+            int temp_min = (int)Math.round(weather.getMain().getTemp_min());
+            int temp_max = (int)Math.round(weather.getMain().getTemp_max());
 
-                if(json != null){
-                    JSONObject details = json.getJSONArray("weather").getJSONObject(0);
-                    JSONObject main = json.getJSONObject("main");
-                    JSONObject sys = json.getJSONObject("sys");
-                    SimpleDateFormat formatHour = new SimpleDateFormat("HH:mm");
-                    Date hours = new Date(System.currentTimeMillis());
+            SimpleDateFormat formatHour = new SimpleDateFormat("HH:mm");
+            Date hours = new Date(System.currentTimeMillis());
 
-                    SimpleDateFormat formatDate = new SimpleDateFormat("dd/MM");
-                    Date date = new Date(System.currentTimeMillis());
+            SimpleDateFormat formatDate = new SimpleDateFormat("dd/MM");
+            Date date = new Date(System.currentTimeMillis());
 
-                    cityField.setText(json.getString("name")+", "+sys.getString("country"));
-                    dateField.setText(formatDate.format(date));
-                    updateField.setText(formatHour.format(hours));
-                    currentTemperature.setText(main.getInt("temp")+"º");
-                    infoField.setText(details.getString("description"));
-                    weatherIcon.setText(Html.fromHtml(Function.setIcon(details.getInt("id"),sys.getLong("sunrise")*1000,sys.getLong("sunset")*1000)));
+            cityField.setText(weather.getName()+", "+weather.getSys().getCountry());
+            dateField.setText(formatDate.format(date));
+            updateField.setText(formatHour.format(hours));
 
-                    humidityField.setText("Humidity: "+main.getString("humidity")+"%");
-                    pressureField.setText("Pressure: "+main.getString("pressure")+"hpa");
-                    windField.setText("Wind: "+json.getJSONObject("wind").getString("speed")+"m/s");
+            currentTemperature.setText(temp+"º");
+            infoField.setText(weather.getWeather()[0].getDescription());
+            weatherIcon.setText(Html.fromHtml(Function.setIcon(weather.getWeather()[0].getId(),weather.getSys().getSunrise()*1000,weather.getSys().getSunset()*1000)));
 
-                    maxminField.setText("Min/Max: "+main.getInt("temp_min")+"/"+main.getInt("temp_max")+"º");
-                    sunriseField.setText("Sunrise: "+formatHour.format(sys.getLong("sunrise")*1000));
-                    sunsetField.setText("Sunset: "+formatHour.format(sys.getLong("sunset")*1000));
+            humidityField.setText("Humidity: "+weather.getMain().getHumidity()+"%");
+            pressureField.setText("Pressure: "+weather.getMain().getPressure()+"hpa");
+            windField.setText("Wind: "+weather.getWind().getSpeed()+"m/s");
 
+            maxminField.setText("Min/Max: "+temp_min+"/"+temp_max+"º");
+            sunriseField.setText("Sunrise: "+formatHour.format(weather.getSys().getSunrise()*1000));
+            sunsetField.setText("Sunset: "+formatHour.format(weather.getSys().getSunset()*1000));
 
-                    loader.setVisibility(View.GONE);
-                }
-            }catch (JSONException e){
-                Toast.makeText(getApplicationContext(), "Error. Wrong city name!", Toast.LENGTH_SHORT).show();
-            }
+            loader.setVisibility(View.GONE);
+
         }
     }
 
@@ -262,6 +275,3 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     }
 
 }
-
-
-
