@@ -21,14 +21,10 @@ import android.widget.TextView;
 import android.widget.EditText;
 import android.graphics.Typeface;
 import android.view.View;
-
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -121,10 +117,10 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     }
 
 
-    public void loadTask(String query){
+    public void loadTask(String city_name){
         if(Function.isNetworkAvailable(getApplicationContext())) {
             getWeather task = new getWeather();
-            task.execute(query);
+            task.execute(city_name);
         }
         else{
             Toast.makeText(getApplicationContext(), "No Internet Connection!", Toast.LENGTH_LONG).show();
@@ -150,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
             String jsonString = Function.getConnection("http://api.openweathermap.org/data/2.5/weather?q="+args[0]+"&units=metric&appid=2397cac5640f1ba782245157aab0343b");
             ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
             try{
                 weather = mapper.readValue(jsonString,WeatherJSON.class);
@@ -168,34 +165,38 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
         @Override
         protected void onPostExecute(String jsonString){
-            int temp = (int)Math.round(weather.getMain().getTemp());
-            int temp_min = (int)Math.round(weather.getMain().getTemp_min());
-            int temp_max = (int)Math.round(weather.getMain().getTemp_max());
+            if(weather.getMain()==null){//ca sa nu mai dea crash daca orasul nu exista
+                Toast.makeText(getApplicationContext(),"Error. Wrong city name",Toast.LENGTH_LONG).show();
+            }
+            else {
+                int temp = (int) Math.round(weather.getMain().getTemp());
+                int temp_min = (int) Math.round(weather.getMain().getTemp_min());
+                int temp_max = (int) Math.round(weather.getMain().getTemp_max());
 
-            SimpleDateFormat formatHour = new SimpleDateFormat("HH:mm");
-            Date hours = new Date(System.currentTimeMillis());
+                SimpleDateFormat formatHour = new SimpleDateFormat("HH:mm");
+                Date hours = new Date(System.currentTimeMillis());
 
-            SimpleDateFormat formatDate = new SimpleDateFormat("dd/MM");
-            Date date = new Date(System.currentTimeMillis());
+                SimpleDateFormat formatDate = new SimpleDateFormat("dd/MM");
+                Date date = new Date(System.currentTimeMillis());
 
-            cityField.setText(weather.getName()+", "+weather.getSys().getCountry());
-            dateField.setText(formatDate.format(date));
-            updateField.setText(formatHour.format(hours));
+                cityField.setText(weather.getName() + ", " + weather.getSys().getCountry());
+                dateField.setText(formatDate.format(date));
+                updateField.setText(formatHour.format(hours));
 
-            currentTemperature.setText(temp+"º");
-            infoField.setText(weather.getWeather()[0].getDescription());
-            weatherIcon.setText(Html.fromHtml(Function.setIcon(weather.getWeather()[0].getId(),weather.getSys().getSunrise()*1000,weather.getSys().getSunset()*1000)));
+                currentTemperature.setText(temp + "º");
+                infoField.setText(weather.getWeather()[0].getDescription());
+                weatherIcon.setText(Html.fromHtml(Function.setIcon(weather.getWeather()[0].getId(), weather.getSys().getSunrise() * 1000, weather.getSys().getSunset() * 1000)));
 
-            humidityField.setText("Humidity: "+weather.getMain().getHumidity()+"%");
-            pressureField.setText("Pressure: "+weather.getMain().getPressure()+"hpa");
-            windField.setText("Wind: "+weather.getWind().getSpeed()+"m/s");
+                humidityField.setText("Humidity: " + weather.getMain().getHumidity() + "%");
+                pressureField.setText("Pressure: " + weather.getMain().getPressure() + "hpa");
+                windField.setText("Wind: " + weather.getWind().getSpeed() + "m/s");
 
-            maxminField.setText("Min/Max: "+temp_min+"/"+temp_max+"º");
-            sunriseField.setText("Sunrise: "+formatHour.format(weather.getSys().getSunrise()*1000));
-            sunsetField.setText("Sunset: "+formatHour.format(weather.getSys().getSunset()*1000));
+                maxminField.setText("Min/Max: " + temp_min + "/" + temp_max + "º");
+                sunriseField.setText("Sunrise: " + formatHour.format(weather.getSys().getSunrise() * 1000));
+                sunsetField.setText("Sunset: " + formatHour.format(weather.getSys().getSunset() * 1000));
 
-            loader.setVisibility(View.GONE);
-
+                loader.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -214,25 +215,23 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     @Override
     public boolean onFling(MotionEvent motionEvent1, MotionEvent motionEvent2, float X, float Y) {
         if (motionEvent1.getY() - motionEvent2.getY() > 50) {
-            Toast.makeText(MainActivity.this, "You Swiped up!", Toast.LENGTH_LONG).show();
+            //swipe up
             return true;
         }
 
         if (motionEvent2.getY() - motionEvent1.getY() > 50) {
+            //swipe down
             Toast.makeText(MainActivity.this, "Refreshing...", Toast.LENGTH_SHORT).show();
             loadTask(city);
             return true;
         }
 
         if (motionEvent1.getX() - motionEvent2.getX() > 50) {
-            Toast.makeText(MainActivity.this, "You Swiped Left!", Toast.LENGTH_LONG).show();
             showDetails();
             return true;
         }
 
         if (motionEvent2.getX() - motionEvent1.getX() > 50) {
-            Toast.makeText(MainActivity.this, "You Swiped Right!", Toast.LENGTH_LONG).show();
-
             showTemp();
             return true;
         } else {

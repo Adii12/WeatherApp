@@ -4,16 +4,18 @@ public class WeatherJSON {
     private Coord coord;
     private Weather[] weather;
     private String base;
-    private Main main;
+    private Main main=null;
     private String visibility;
     private Wind wind;
     private Clouds clouds;
+
     private long dt;
     private Sys sys;
     private long timezone;
     private int id;
     private String name;
     private int cod;
+
 
     public WeatherJSON(){}
 
@@ -23,6 +25,7 @@ public class WeatherJSON {
     public void setCoord(Coord coord) {
         this.coord = coord;
     }
+
     public Weather[] getWeather() {
         return weather;
     }
@@ -53,6 +56,8 @@ public class WeatherJSON {
     public void setWind(Wind wind) {
         this.wind = wind;
     }
+
+
     public Clouds getClouds() {
         return clouds;
     }
