@@ -1,11 +1,13 @@
 package com.example.weatherapp;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
@@ -29,13 +31,13 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity implements GestureDetector.OnGestureListener {
-    GestureDetector gestureDetector;
+public class MainActivity extends AppCompatActivity {
     ProgressBar loader;
     TextView weatherIcon, currentTemperature, cityField, updateField, infoField, dateField, humidityField, pressureField, windField, maxminField, sunriseField, sunsetField;
     Typeface weatherFont;
     Button selectCity;
     LinearLayout temperatureLayout, moreDetailsLayout;
+    RelativeLayout mainLayout;
 
     String city="targu-mures";
 
@@ -49,9 +51,11 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
-        gestureDetector = new GestureDetector(this,this);
+
         temperatureLayout=findViewById(R.id.temperatureLayout);
         moreDetailsLayout=findViewById(R.id.moredetails_layout);
+        mainLayout=findViewById(R.id.main_layout);
+
         dateField=findViewById(R.id.date_field);
         cityField=findViewById(R.id.cityField);
         updateField=findViewById(R.id.updated_field);
@@ -105,10 +109,37 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
            }
        });
 
+       weatherIcon.setOnTouchListener(new OnSwipeTouchListener(this){
+           @Override
+           public void onSwipeBottom(){
+               super.onSwipeBottom();
+               loadTask(city);
+           }
+       });
+
+       temperatureLayout.setOnTouchListener(new OnSwipeTouchListener(this){
+           @Override
+           public void onSwipeLeft() {
+               super.onSwipeLeft();
+               temperatureLayout.setVisibility(View.GONE);
+               moreDetailsLayout.setVisibility(View.VISIBLE);
+
+           }
+       });
+
+        moreDetailsLayout.setOnTouchListener(new OnSwipeTouchListener(this){
+            @Override
+            public void onSwipeRight() {
+                super.onSwipeRight();
+                temperatureLayout.setVisibility(View.VISIBLE);
+                moreDetailsLayout.setVisibility(View.GONE);
+
+            }
+        });
 
 
 
-    }
+}
 
     protected void onResume(){
         super.onResume();
@@ -200,77 +231,71 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         }
     }
 
-    public void showDetails(){
-        temperatureLayout.setVisibility(View.GONE);
-        moreDetailsLayout.setVisibility(View.VISIBLE);
-    }
 
-    public void showTemp(){
-        temperatureLayout.setVisibility(View.VISIBLE);
-        moreDetailsLayout.setVisibility(View.GONE);
+        class OnSwipeTouchListener implements View.OnTouchListener {
 
+        private final GestureDetector gestureDetector;
 
-    }
-
-    @Override
-    public boolean onFling(MotionEvent motionEvent1, MotionEvent motionEvent2, float X, float Y) {
-        if (motionEvent1.getY() - motionEvent2.getY() > 50) {
-            //swipe up
-            return true;
+        public OnSwipeTouchListener (Context ctx){
+            gestureDetector = new GestureDetector(ctx, new GestureListener());
         }
 
-        if (motionEvent2.getY() - motionEvent1.getY() > 50) {
-            //swipe down
-            Toast.makeText(MainActivity.this, "Refreshing...", Toast.LENGTH_SHORT).show();
-            loadTask(city);
-            return true;
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            return gestureDetector.onTouchEvent(event);
         }
 
-        if (motionEvent1.getX() - motionEvent2.getX() > 50) {
-            showDetails();
-            return true;
+        private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+            private static final int SWIPE_THRESHOLD = 100;
+            private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return true;
+            }
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                boolean result = false;
+                try {
+                    float diffY = e2.getY() - e1.getY();
+                    float diffX = e2.getX() - e1.getX();
+                    if (Math.abs(diffX) > Math.abs(diffY)) {
+                        if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                            if (diffX > 0) {
+                                onSwipeRight();
+                            } else {
+                                onSwipeLeft();
+                            }
+                            result = true;
+                        }
+                    }
+                    else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                        if (diffY > 0) {
+                            onSwipeBottom();
+                        } else {
+                            onSwipeTop();
+                        }
+                        result = true;
+                    }
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+                return result;
+            }
         }
 
-        if (motionEvent2.getX() - motionEvent1.getX() > 50) {
-            showTemp();
-            return true;
-        } else {
-            return true;
+        public void onSwipeRight() {
+        }
+
+        public void onSwipeLeft() {
+        }
+
+        public void onSwipeTop() {
+        }
+
+        public void onSwipeBottom() {
         }
     }
-
-    @Override
-    public void onLongPress(MotionEvent arg0) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent arg0, MotionEvent arg1, float arg2, float arg3) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent arg0) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent arg0) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent motionEvent) {
-        // TODO Auto-generated method stub
-        return gestureDetector.onTouchEvent(motionEvent);
-    }
-
-    @Override
-    public boolean onDown(MotionEvent arg0) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
 }
