@@ -1,32 +1,38 @@
 package com.example.weatherapp;
 
-
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Typeface;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import android.content.DialogInterface;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.text.Html;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.EditText;
-import android.graphics.Typeface;
-import android.view.View;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     Button selectCity;
     LinearLayout temperatureLayout, moreDetailsLayout;
     RelativeLayout mainLayout;
+    Animation in_left,in_right,out_left,out_right, fadeIn;
 
     String city="targu-mures";
 
@@ -50,6 +57,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+        in_left= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.in_left);
+        in_right= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.in_right);
+        out_left= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.out_left);
+        out_right= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.out_right);
+
+        fadeIn=AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fade_in);
 
 
         temperatureLayout=findViewById(R.id.temperatureLayout);
@@ -76,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         weatherIcon.setTypeface(weatherFont);
 
         moreDetailsLayout.setVisibility(View.GONE);
+        //mainLayout.startAnimation(fadeIn);
         loadTask(city);
 
        selectCity.setOnClickListener(new View.OnClickListener(){
@@ -96,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
                        new DialogInterface.OnClickListener() {
                            public void onClick(DialogInterface dialogInterface, int i) {
                                city = input.getText().toString();
+                               //mainLayout.startAnimation(fadeIn);
                                loadTask(city);
                            }
                        });
@@ -121,8 +137,10 @@ public class MainActivity extends AppCompatActivity {
            @Override
            public void onSwipeLeft() {
                super.onSwipeLeft();
-               temperatureLayout.setVisibility(View.GONE);
                moreDetailsLayout.setVisibility(View.VISIBLE);
+               temperatureLayout.startAnimation(out_left);
+               moreDetailsLayout.startAnimation(in_left);
+               temperatureLayout.setVisibility(View.GONE);
 
            }
        });
@@ -132,6 +150,8 @@ public class MainActivity extends AppCompatActivity {
             public void onSwipeRight() {
                 super.onSwipeRight();
                 temperatureLayout.setVisibility(View.VISIBLE);
+                temperatureLayout.startAnimation(in_right);
+                moreDetailsLayout.startAnimation(out_right);
                 moreDetailsLayout.setVisibility(View.GONE);
 
             }
@@ -225,17 +245,60 @@ public class MainActivity extends AppCompatActivity {
                 maxminField.setText("Min/Max: " + temp_min + "/" + temp_max + "º");
                 sunriseField.setText("Sunrise: " + formatHour.format(weather.getSys().getSunrise() * 1000));
                 sunsetField.setText("Sunset: " + formatHour.format(weather.getSys().getSunset() * 1000));
-
+                setBackground(weather.getWeather()[0].getId(), weather.getSys().getSunrise() * 1000, weather.getSys().getSunset() * 1000);
                 loader.setVisibility(View.GONE);
             }
         }
     }
 
+    public String setBackground(int actualId, long sunrise, long sunset){
+        int id = actualId/100;
+        String icon="";
 
-        class OnSwipeTouchListener implements View.OnTouchListener {
+        if(actualId==800){
+            long currentTime=new Date().getTime();
+
+            if(currentTime>=sunrise && currentTime<sunset){
+                mainLayout.setBackgroundResource(R.drawable.sunny_gradient);
+            }
+            else{
+                 //clear night
+            }
+        }
+        else{
+            switch (id){
+                case 2:
+                    mainLayout.setBackgroundResource(R.drawable.rainy_gradient); //thunderstorm
+                    break;
+
+                case 3:
+                     //drizzle
+                    break;
+
+                case 5:
+                    mainLayout.setBackgroundResource(R.drawable.rainy_gradient); //rain
+                    break;
+
+                case 6:
+                    mainLayout.setBackgroundResource(R.drawable.snowy_gradient); //snow
+                    break;
+
+                case 7:
+                     //fog
+                    break;
+
+                case 8:
+                    mainLayout.setBackgroundResource(R.drawable.gradient); //cloudy
+                    break;
+            }
+        }
+
+        return icon;
+    }
+
+    class OnSwipeTouchListener implements View.OnTouchListener {
 
         private final GestureDetector gestureDetector;
-
         public OnSwipeTouchListener (Context ctx){
             gestureDetector = new GestureDetector(ctx, new GestureListener());
         }
