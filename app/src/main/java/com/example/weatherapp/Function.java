@@ -1,16 +1,16 @@
 package com.example.weatherapp;
 
 
-    import android.content.Context;
-    import android.net.ConnectivityManager;
-    import android.net.NetworkInfo;
-    import android.view.View;
-    import android.widget.RelativeLayout;
-    import android.widget.TextView;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
-    import java.io.*;
-    import java.net.*;
-    import java.util.Date;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Date;
 
 public class Function {
 
@@ -86,6 +86,7 @@ public class Function {
 
     public static String setIcon(int actualId, long sunrise, long sunset){
         int id = actualId/100;
+
         String icon="";
 
         if(actualId==800){
