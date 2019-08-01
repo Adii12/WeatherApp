@@ -1,0 +1,57 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/sunshinesmile150300065"
+    android:padding="@dimen/widget_margin">
+
+
+    <TextView
+        android:id="@+id/city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mures"
+        android:textColor="#fff"
+        android:gravity="center"
+        android:layout_above="@id/temperature"
+        android:layout_centerHorizontal="true"
+        android:textSize="30sp"
+        />
+
+
+    <TextView
+        android:id="@+id/temperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="21º"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:textColor="#fff"
+        android:textSize="70sp"
+        android:paddingBottom="40dp"/>
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="01/08"
+        android:textColor="#fff"
+        android:gravity="center"
+        android:layout_below="@id/temperature"
+        android:layout_centerHorizontal="true"
+        android:textSize="30sp"
+        android:layout_marginTop="-60dp"
+        />
+
+    <TextView
+        android:id="@+id/info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cloudy"
+        android:textColor="#fff"
+        android:gravity="center"
+        android:layout_below="@id/date"
+        android:layout_centerHorizontal="true"
+        android:textSize="20dp"
+        />
+
+</RelativeLayout>

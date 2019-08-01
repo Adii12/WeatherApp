@@ -1,12 +1,19 @@
 package com.example.weatherapp;
 
+import android.annotation.SuppressLint;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.Html;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -34,6 +41,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     ProgressBar loader;
@@ -47,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
     Animation in_left,in_right,out_left,out_right,in_up,in_down,out_down, out_up;
 
     String city="targu-mures";
+    String SP_WEATHER = "SP_WEATHER"; //adauga in app
+
+    SharedPreferences sharedPreferences; //adauga in app
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -57,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);//notification bar transparent
+
+        sharedPreferences = getSharedPreferences(SP_WEATHER, MODE_PRIVATE);
 
         in_left= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.in_left);//IN de la dreapta la stanga
         in_right= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.in_right);//IN de la stanga la dreapta
@@ -123,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 city = input.getText().toString();
                                 loadTask(city);
+                                updateWidget();
                             }
                         });
                 alert.setNegativeButton("Cancel",
@@ -197,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         Toast.makeText(MainActivity.this, "Refreshing...", Toast.LENGTH_SHORT).show();
         loadTask(city);
+        updateWidget();
     }
 
 
@@ -226,12 +242,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+        @SuppressLint("ApplySharedPref")
         protected String doInBackground(String...args){
 
             String jsonString = Function.getConnection("http://api.openweathermap.org/data/2.5/weather?q="+args[0]+"&units=metric&appid=2397cac5640f1ba782245157aab0343b");
             String forecastString =Function.getConnection("http://api.openweathermap.org/data/2.5/forecast?q="+args[0]+"&units=metric&appid=2397cac5640f1ba782245157aab0343b");
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+            sharedPreferences.edit().putString("WEATHER_JSON_STRING", jsonString).commit();
 
             try{
                 weather = mapper.readValue(jsonString,WeatherJSON.class);
@@ -300,6 +319,9 @@ public class MainActivity extends AppCompatActivity {
 
 
                 loader.setVisibility(View.GONE);
+
+                Log.d("debug", "updating widget");
+                updateWidget();
             }
         }
     }
@@ -344,6 +366,16 @@ public class MainActivity extends AppCompatActivity {
         else{
             mainLayout.setBackgroundResource(R.drawable.night_gradient); //night
         }
+    }
+
+    private void updateWidget() {
+        Intent intent = new Intent(this, WeatherWidget.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+// Use an array and EXTRA_APPWIDGET_IDS instead of AppWidgetManager.EXTRA_APPWIDGET_ID,
+// since it seems the onUpdate() is only fired on that:
+        int[] ids = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), WeatherWidget.class));
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        sendBroadcast(intent);
     }
 
 }

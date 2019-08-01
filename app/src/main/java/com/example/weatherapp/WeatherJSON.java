@@ -1,6 +1,7 @@
 package com.example.weatherapp;
 
 public class WeatherJSON {
+    private static WeatherJSON inst=null;
     private Coord coord;
     private Weather[] weather;
     private String base;
@@ -18,6 +19,9 @@ public class WeatherJSON {
 
 
     public WeatherJSON(){}
+
+
+
 
     public Coord getCoord() {
         return coord;
