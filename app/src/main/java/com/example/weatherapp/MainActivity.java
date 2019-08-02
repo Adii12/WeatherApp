@@ -305,18 +305,17 @@ public class MainActivity extends AppCompatActivity {
                 SimpleDateFormat dayName = new SimpleDateFormat("EEEE");
 
                 //PT FORECAST LAYOUT
-                day2Time.setText(dayName.format(forecast.getList()[9].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[9].getDt()*1000));
-                day2Temps.setText((int)Math.round(forecast.getList()[5].getMain().getTemp())+"º/"+(int)Math.round(forecast.getList()[9].getMain().getTemp())+"º");
+                day2Time.setText(formatHour.format(forecast.getList()[0].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[0].getDt()*1000));
+                day2Temps.setText((int)Math.round(forecast.getList()[0].getMain().getTemp())+"º");
 
-                day3Time.setText(dayName.format(forecast.getList()[17].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[17].getDt()*1000));
-                day3Temps.setText((int)Math.round(forecast.getList()[13].getMain().getTemp())+"º/"+(int)Math.round(forecast.getList()[17].getMain().getTemp())+"º");
+                day3Time.setText(formatHour.format(forecast.getList()[1].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[1].getDt()*1000));
+                day3Temps.setText((int)Math.round(forecast.getList()[1].getMain().getTemp())+"º"+"\n");
 
-                day4Time.setText(dayName.format(forecast.getList()[25].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[25].getDt()*1000));
-                day4Temps.setText((int)Math.round(forecast.getList()[21].getMain().getTemp())+"º/"+(int)Math.round(forecast.getList()[25].getMain().getTemp())+"º");
+                day4Time.setText(formatHour.format(forecast.getList()[2].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[2].getDt()*1000));
+                day4Temps.setText((int)Math.round(forecast.getList()[2].getMain().getTemp())+"º");
 
-                day5Time.setText(dayName.format(forecast.getList()[33].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[33].getDt()*1000));
-                day5Temps.setText((int)Math.round(forecast.getList()[29].getMain().getTemp())+"º/"+(int)Math.round(forecast.getList()[33].getMain().getTemp())+"º");
-
+                day5Time.setText(formatHour.format(forecast.getList()[3].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[3].getDt()*1000));
+                day5Temps.setText((int)Math.round(forecast.getList()[3].getMain().getTemp())+"º");
 
                 loader.setVisibility(View.GONE);
 
