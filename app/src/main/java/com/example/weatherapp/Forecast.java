@@ -26,6 +26,19 @@ class List{
     private long dt;
     private MainForecast main;
     private String dt_txt;
+    private ForecastWeather[] weather;
+
+
+
+    public ForecastWeather[] getForecastWeather() {
+        return weather;
+    }
+
+    public void setForecastWeather(ForecastWeather[] weather) {
+        this.weather = weather;
+    }
+
+
 
     public long getDt() {
         return dt;
@@ -35,6 +48,8 @@ class List{
         this.dt = dt;
     }
 
+
+
     public MainForecast getMain() {
         return main;
     }
@@ -42,6 +57,8 @@ class List{
     public void setMain(MainForecast main) {
         this.main = main;
     }
+
+
 
 
     public String getDt_txt() {
@@ -55,53 +72,22 @@ class List{
 
 class MainForecast{
     private double temp;
-    private double temp_min;
-    private double temp_max;
-    private double pressure;
-    private int humidity;
+
 
     public double getTemp() {
         return temp;
     }
 
-    public void setTemp(double temp) {
-        this.temp = temp;
-    }
-
-    public double getTemp_min() {
-        return temp_min;
-    }
-
-    public void setTemp_min(double temp_min) {
-        this.temp_min = temp_min;
-    }
-
-    public double getTemp_max() {
-        return temp_max;
-    }
-
-    public void setTemp_max(double temp_max) {
-        this.temp_max = temp_max;
-    }
-
-    public double getPressure() {
-        return pressure;
-    }
-
-    public void setPressure(double pressure) {
-        this.pressure = pressure;
-    }
-
-    public int getHumidity() {
-        return humidity;
-    }
-
-    public void setHumidity(int humidity) {
-        this.humidity = humidity;
-    }
-
     @Override
     public String toString() {
         return ""+temp;
+    }
+}
+
+class ForecastWeather{
+    private String description;
+
+    public String getDescription() {
+        return description;
     }
 }

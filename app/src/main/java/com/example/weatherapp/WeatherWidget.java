@@ -4,16 +4,15 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Paint;
-import android.graphics.Typeface;
-import android.text.Html;
 import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 /**
  * Implementation of App Widget functionality.
@@ -28,10 +27,13 @@ public class WeatherWidget extends AppWidgetProvider {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SP_WEATHER, Context.MODE_PRIVATE);
         String jsonString = sharedPreferences.getString("WEATHER_JSON_STRING", "");
 
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM");
+        Date date  = new Date(System.currentTimeMillis());
+
         if (!jsonString.isEmpty()) {
             WeatherJSON weather = new WeatherJSON();
             try {
-                weather = new ObjectMapper().readValue(jsonString, WeatherJSON.class);
+                weather = new ObjectMapper().readValue("http://api.openweathermap.org/data/2.5/weather?q=targu-mures&units=metric&appid=2397cac5640f1ba782245157aab0343b", WeatherJSON.class);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
@@ -46,6 +48,7 @@ public class WeatherWidget extends AppWidgetProvider {
                 views.setTextViewText(R.id.temperature, temp + "º");
                 views.setTextViewText(R.id.city,weather.getName());
                 views.setTextViewText(R.id.info, weather.getWeather()[0].getDescription());
+                views.setTextViewText(R.id.date, sdf.format(date));
                 // Instruct the widget manager to update the widget
                 appWidgetManager.updateAppWidget(appWidgetId, views);
             }
