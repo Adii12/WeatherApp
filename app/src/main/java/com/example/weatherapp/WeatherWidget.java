@@ -15,6 +15,9 @@ import android.widget.Toast;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Implementation of App Widget functionality.
  */
@@ -24,6 +27,9 @@ public class WeatherWidget extends AppWidgetProvider {
                                 int appWidgetId) {
 
         String SP_WEATHER = "SP_WEATHER";//adauga in app
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM");
+        Date date  = new Date(System.currentTimeMillis());
 
         SharedPreferences sharedPreferences = context.getSharedPreferences(SP_WEATHER, Context.MODE_PRIVATE);
         String jsonString = sharedPreferences.getString("WEATHER_JSON_STRING", "");
@@ -46,6 +52,8 @@ public class WeatherWidget extends AppWidgetProvider {
                 views.setTextViewText(R.id.temperature, temp + "º");
                 views.setTextViewText(R.id.city,weather.getName());
                 views.setTextViewText(R.id.info, weather.getWeather()[0].getDescription());
+                views.setTextViewText(R.id.date, sdf.format(date));
+
                 // Instruct the widget manager to update the widget
                 appWidgetManager.updateAppWidget(appWidgetId, views);
             }
