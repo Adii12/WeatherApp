@@ -1,5 +1,6 @@
 package com.example.weatherapp;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -7,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -22,16 +24,20 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -54,11 +60,19 @@ public class MainActivity extends AppCompatActivity {
     RelativeLayout mainLayout;
     LinearLayout forecastLayout;
     Animation in_left,in_right,out_left,out_right,in_up,in_down,out_down, out_up;
+    Switch switchButton;
+
+
+    double longitude, latitude;
 
     String city="targu-mures";
     String SP_WEATHER = "SP_WEATHER"; //adauga in app
 
+    String jsonString;
+
     SharedPreferences sharedPreferences; //adauga in app
+
+    GPSTracker gps;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -70,7 +84,12 @@ public class MainActivity extends AppCompatActivity {
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);//notification bar transparent
 
+
+
+        jsonString="http://api.openweathermap.org/data/2.5/weather?q="+city+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
         sharedPreferences = getSharedPreferences(SP_WEATHER, MODE_PRIVATE);
+
+       switchButton = findViewById(R.id.switch_button);
 
         in_left= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.in_left);//IN de la dreapta la stanga
         in_right= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.in_right);//IN de la stanga la dreapta
@@ -147,6 +166,34 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                 alert.show();
+            }
+        });
+
+        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if(isChecked){
+
+                    if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 50);
+                    }
+                    gps = new GPSTracker(MainActivity.this, MainActivity.this);
+
+                    if(gps.CanGetLocation()){
+                        latitude = gps.getLatitude();
+                        longitude = gps.getLongitude();
+
+                        Toast.makeText(getApplicationContext(), "LAT="+latitude+"\nLON="+longitude, Toast.LENGTH_LONG).show();
+                    }
+                    jsonString="http://api.openweathermap.org/data/2.5/weather?lat="+latitude+"&lon="+longitude+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
+                    loadTask(city);
+                    updateWidget();
+                }else{
+                    Toast.makeText(getApplicationContext(), "Location disabled", Toast.LENGTH_SHORT).show();
+                    jsonString="http://api.openweathermap.org/data/2.5/weather?q="+city+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
+                    loadTask(city);
+                    updateWidget();
+                }
             }
         });
 
@@ -245,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
         @SuppressLint("ApplySharedPref")
         protected String doInBackground(String...args){
 
-            String jsonString = Function.getConnection("http://api.openweathermap.org/data/2.5/weather?q="+args[0]+"&units=metric&appid=2397cac5640f1ba782245157aab0343b");
+            String json = Function.getConnection(jsonString);
             String forecastString =Function.getConnection("http://api.openweathermap.org/data/2.5/forecast?q="+args[0]+"&units=metric&appid=2397cac5640f1ba782245157aab0343b");
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -253,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
             sharedPreferences.edit().putString("WEATHER_JSON_STRING", jsonString).commit();
 
             try{
-                weather = mapper.readValue(jsonString,WeatherJSON.class);
+                weather = mapper.readValue(json,WeatherJSON.class);
                 forecast = mapper.readValue(forecastString,Forecast.class);
             }catch (JsonParseException e){
                 e.printStackTrace();
@@ -301,8 +348,7 @@ public class MainActivity extends AppCompatActivity {
                 sunriseField.setText("Sunrise: " + formatHour.format(weather.getSys().getSunrise() * 1000));
                 sunsetField.setText("Sunset: " + formatHour.format(weather.getSys().getSunset() * 1000));
                 setBackground(weather.getWeather()[0].getId(), weather.getSys().getSunrise() * 1000, weather.getSys().getSunset() * 1000);
-
-                SimpleDateFormat dayName = new SimpleDateFormat("EEEE");
+                
 
                 //PT FORECAST LAYOUT
                 day2Time.setText(formatHour.format(forecast.getList()[0].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[0].getDt()*1000));
