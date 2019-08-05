@@ -1,6 +1,5 @@
 package com.example.weatherapp;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -8,11 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Typeface;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,19 +22,16 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -58,21 +50,13 @@ public class MainActivity extends AppCompatActivity {
     TextView day2Time, day2Temps, day3Time, day3Temps, day4Time, day4Temps, day5Time, day5Temps;
     Typeface weatherFont;
     Button selectCity;
-    Switch switchButton;
     LinearLayout temperatureLayout, moreDetailsLayout;
     RelativeLayout mainLayout;
     LinearLayout forecastLayout;
     Animation in_left,in_right,out_left,out_right,in_up,in_down,out_down, out_up;
-    TextView[] forecast;
 
-    String city="brasov";
+    String city="targu-mures";
     String SP_WEATHER = "SP_WEATHER"; //adauga in app
-    String Location_PROVIDER = LocationManager.GPS_PROVIDER;
-    String jsonString = "http://api.openweathermap.org/data/2.5/weather?q="+city+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
-    String locationString;
-
-    LocationManager mLocationManager;
-    LocationListener mLocationListener;
 
     SharedPreferences sharedPreferences; //adauga in app
 
@@ -110,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
         selectCity=findViewById(R.id.button);
         loader=findViewById(R.id.progress);
         infoField=findViewById(R.id.info_field);
-        switchButton=findViewById(R.id.switch_button);
 
         humidityField=findViewById(R.id.humidity_field);
         pressureField=findViewById(R.id.pressure_field);
@@ -133,10 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
         moreDetailsLayout.setVisibility(View.GONE);
         forecastLayout.setVisibility(View.GONE);
-
-
-        loadTask(jsonString);
-
+        loadTask(city);
 
         selectCity.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -156,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 city = input.getText().toString();
-                                loadTask(jsonString);
+                                loadTask(city);
                                 updateWidget();
                             }
                         });
@@ -170,64 +150,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if(isChecked) {
-                    mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-
-                    mLocationListener = new LocationListener() {
-                        @Override
-                        public void onLocationChanged(Location location) {
-                            double lon = location.getLongitude();
-                            double lat = location.getLatitude();
-                            Toast.makeText(getApplicationContext(),lon+" "+lat ,Toast.LENGTH_LONG).show();
-
-                            locationString = "https://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lon+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
-
-                        }
-
-                        @Override
-                        public void onStatusChanged(String s, int i, Bundle bundle) {
-
-                        }
-
-                        @Override
-                        public void onProviderEnabled(String s) {
-
-                        }
-
-                        @Override
-                        public void onProviderDisabled(String s) {
-
-                        }
-                    };
-                    if(ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
-                        return;
-                    }
-                    else{
-                        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,mLocationListener);
-                    }
-                    loadTask(locationString);
-                    Toast.makeText(getApplicationContext(),"location enabled", Toast.LENGTH_LONG).show();
-                }
-                else{
-                    jsonString="http://api.openweathermap.org/data/2.5/weather?q="+city+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
-                    loadTask(jsonString);
-                    Toast.makeText(getApplicationContext(),"location disabled", Toast.LENGTH_LONG).show();
-
-                }
-            }
-        });
-
         weatherIcon.setOnTouchListener(new OnSwipeTouchListener(this){
             @Override
             public void onSwipeBottom(){
                 super.onSwipeBottom();
-                loadTask(jsonString);
+                loadTask(city);
             }
         });
 
@@ -284,15 +211,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         Toast.makeText(MainActivity.this, "Refreshing...", Toast.LENGTH_SHORT).show();
-        loadTask(jsonString);
+        loadTask(city);
         updateWidget();
     }
 
 
-    public void loadTask(String json){
+    public void loadTask(String city_name){
         if(Function.isNetworkAvailable(getApplicationContext())) {
             getWeather task = new getWeather();
-            task.execute(json);
+            task.execute(city_name);
         }
         else{
             Toast.makeText(getApplicationContext(), "No Internet Connection!", Toast.LENGTH_LONG).show();
@@ -318,15 +245,15 @@ public class MainActivity extends AppCompatActivity {
         @SuppressLint("ApplySharedPref")
         protected String doInBackground(String...args){
 
-            String forecastString =Function.getConnection("http://api.openweathermap.org/data/2.5/forecast?q="+city+"&units=metric&appid=2397cac5640f1ba782245157aab0343b");
-            String apiString = Function.getConnection(args[0]);
+            String jsonString = Function.getConnection("http://api.openweathermap.org/data/2.5/weather?q="+args[0]+"&units=metric&appid=2397cac5640f1ba782245157aab0343b");
+            String forecastString =Function.getConnection("http://api.openweathermap.org/data/2.5/forecast?q="+args[0]+"&units=metric&appid=2397cac5640f1ba782245157aab0343b");
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-            sharedPreferences.edit().putString("WEATHER_JSON_STRING", "http://api.openweathermap.org/data/2.5/weather?q="+city+"&units=metric&appid=2397cac5640f1ba782245157aab0343b").commit();
+            sharedPreferences.edit().putString("WEATHER_JSON_STRING", jsonString).commit();
 
             try{
-                weather = mapper.readValue(apiString,WeatherJSON.class);
+                weather = mapper.readValue(jsonString,WeatherJSON.class);
                 forecast = mapper.readValue(forecastString,Forecast.class);
             }catch (JsonParseException e){
                 e.printStackTrace();
@@ -375,20 +302,20 @@ public class MainActivity extends AppCompatActivity {
                 sunsetField.setText("Sunset: " + formatHour.format(weather.getSys().getSunset() * 1000));
                 setBackground(weather.getWeather()[0].getId(), weather.getSys().getSunrise() * 1000, weather.getSys().getSunset() * 1000);
 
+                SimpleDateFormat dayName = new SimpleDateFormat("EEEE");
 
                 //PT FORECAST LAYOUT
                 day2Time.setText(formatHour.format(forecast.getList()[0].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[0].getDt()*1000));
-                day2Temps.setText((int)Math.round(forecast.getList()[0].getMain().getTemp())+"º");
+                day2Temps.setText((int)Math.round(forecast.getList()[0].getMain().getTemp())+"º\n");
 
                 day3Time.setText(formatHour.format(forecast.getList()[1].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[1].getDt()*1000));
-                day3Temps.setText((int)Math.round(forecast.getList()[1].getMain().getTemp())+"º"+"\n");
+                day3Temps.setText((int)Math.round(forecast.getList()[1].getMain().getTemp())+"º");
 
                 day4Time.setText(formatHour.format(forecast.getList()[2].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[2].getDt()*1000));
                 day4Temps.setText((int)Math.round(forecast.getList()[2].getMain().getTemp())+"º");
 
                 day5Time.setText(formatHour.format(forecast.getList()[3].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[3].getDt()*1000));
-                day5Temps.setText((int)Math.round(forecast.getList()[3].getMain().getTemp())+"º");
-
+                day5Temps.setText((int)Math.round(forecast.getList()[3].getMain().getTemp())+"º\n");
 
                 loader.setVisibility(View.GONE);
 
@@ -443,8 +370,6 @@ public class MainActivity extends AppCompatActivity {
     private void updateWidget() {
         Intent intent = new Intent(this, WeatherWidget.class);
         intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-// Use an array and EXTRA_APPWIDGET_IDS instead of AppWidgetManager.EXTRA_APPWIDGET_ID,
-// since it seems the onUpdate() is only fired on that:
         int[] ids = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), WeatherWidget.class));
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         sendBroadcast(intent);
@@ -525,4 +450,3 @@ class OnSwipeTouchListener implements View.OnTouchListener {
     public void onSwipeBottom() {
     }
 }
-
