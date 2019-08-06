@@ -1,5 +1,8 @@
 package com.example.weatherapp;
 
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Forecast {
     private int cnt;
     private List[] list;
@@ -84,7 +87,9 @@ class MainForecast{
     }
 }
 
+
 class ForecastWeather{
+    @JsonProperty("description")
     private String description;
 
     public String getDescription() {

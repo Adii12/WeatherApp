@@ -44,6 +44,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -52,8 +56,8 @@ import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     ProgressBar loader;
-    TextView weatherIcon, currentTemperature, cityField, updateField, infoField, dateField, humidityField, pressureField, windField, maxminField, sunriseField, sunsetField;
-    TextView day2Time, day2Temps, day3Time, day3Temps, day4Time, day4Temps, day5Time, day5Temps;
+    TextView weatherIcon, currentTemperature, cityField, updateField, infoField, dateField, humidityField, pressureField, windField, maxminField, sunriseField, sunsetField, lastUpdated;
+    TextView hour1Time, hour1Temps, hour2Time, hour2Temps, hour3Time, hour3Temps, hour4Time, hour4Temps, hour5Time, hour5Temps;
     Typeface weatherFont;
     Button selectCity;
     LinearLayout temperatureLayout, moreDetailsLayout;
@@ -66,9 +70,12 @@ public class MainActivity extends AppCompatActivity {
     double longitude, latitude;
 
     String city="targu-mures";
+
+
     String SP_WEATHER = "SP_WEATHER"; //adauga in app
 
     String jsonString;
+    String jsonForecast;
 
     SharedPreferences sharedPreferences; //adauga in app
 
@@ -87,9 +94,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         jsonString="http://api.openweathermap.org/data/2.5/weather?q="+city+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
+        jsonForecast="http://api.openweathermap.org/data/2.5/forecast?q="+city+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
         sharedPreferences = getSharedPreferences(SP_WEATHER, MODE_PRIVATE);
 
-       switchButton = findViewById(R.id.switch_button);
+        switchButton = findViewById(R.id.switch_button);
+        lastUpdated = findViewById(R.id.last_updated);
 
         in_left= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.in_left);//IN de la dreapta la stanga
         in_right= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.in_right);//IN de la stanga la dreapta
@@ -121,14 +130,16 @@ public class MainActivity extends AppCompatActivity {
         sunriseField=findViewById(R.id.sunrise_field);
         sunsetField=findViewById(R.id.sunset_field);
 
-        day2Time=findViewById(R.id.day2_time);
-        day2Temps=findViewById(R.id.day2_temps);
-        day3Time=findViewById(R.id.day3_time);
-        day3Temps=findViewById(R.id.day3_temps);
-        day4Time=findViewById(R.id.day4_time);
-        day4Temps=findViewById(R.id.day4_temps);
-        day5Time=findViewById(R.id.day5_time);
-        day5Temps=findViewById(R.id.day5_temps);
+        hour1Time=findViewById(R.id.hour1_time);
+        hour1Temps=findViewById(R.id.hour1_temps);
+        hour2Time=findViewById(R.id.hour2_time);
+        hour2Temps=findViewById(R.id.hour2_temps);
+        hour3Time=findViewById(R.id.hour3_time);
+        hour3Temps=findViewById(R.id.hour3_temps);
+        hour4Time=findViewById(R.id.hour4_time);
+        hour4Temps=findViewById(R.id.hour4_temps);
+        hour5Time=findViewById(R.id.hour5_time);
+        hour5Temps=findViewById(R.id.hour5_temps);
 
         weatherFont = getResources().getFont(R.font.icons);
         weatherIcon.setTypeface(weatherFont);
@@ -186,13 +197,13 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "LAT="+latitude+"\nLON="+longitude, Toast.LENGTH_LONG).show();
                     }
                     jsonString="http://api.openweathermap.org/data/2.5/weather?lat="+latitude+"&lon="+longitude+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
+                    jsonForecast="http://api.openweathermap.org/data/2.5/forecast?lat="+latitude+"&lon="+longitude+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
                     loadTask(city);
-                    updateWidget();
                 }else{
                     Toast.makeText(getApplicationContext(), "Location disabled", Toast.LENGTH_SHORT).show();
                     jsonString="http://api.openweathermap.org/data/2.5/weather?q="+city+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
+                    jsonForecast="http://api.openweathermap.org/data/2.5/forecast?q="+city+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
                     loadTask(city);
-                    updateWidget();
                 }
             }
         });
@@ -293,11 +304,12 @@ public class MainActivity extends AppCompatActivity {
         protected String doInBackground(String...args){
 
             String json = Function.getConnection(jsonString);
-            String forecastString =Function.getConnection("http://api.openweathermap.org/data/2.5/forecast?q="+args[0]+"&units=metric&appid=2397cac5640f1ba782245157aab0343b");
+            String forecastString =Function.getConnection(jsonForecast);
+            Log.d("debug", "FORECAST="+forecastString);
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-            sharedPreferences.edit().putString("WEATHER_JSON_STRING", jsonString).commit();
+            sharedPreferences.edit().putString("WEATHER_JSON_STRING", json).commit();
 
             try{
                 weather = mapper.readValue(json,WeatherJSON.class);
@@ -331,6 +343,8 @@ public class MainActivity extends AppCompatActivity {
                 SimpleDateFormat formatDate = new SimpleDateFormat("dd/MM");
                 Date date = new Date(System.currentTimeMillis());
 
+                SimpleDateFormat longDate = new SimpleDateFormat("dd/MM HH:mm");
+
                 //PT MAIN LAYOUT
                 cityField.setText(weather.getName() + ", " + weather.getSys().getCountry());
                 dateField.setText(formatDate.format(date));
@@ -347,21 +361,27 @@ public class MainActivity extends AppCompatActivity {
                 maxminField.setText("Min/Max: " + temp_min + "/" + temp_max + "º");
                 sunriseField.setText("Sunrise: " + formatHour.format(weather.getSys().getSunrise() * 1000));
                 sunsetField.setText("Sunset: " + formatHour.format(weather.getSys().getSunset() * 1000));
+                lastUpdated.setText("Last Updated: "+longDate.format(weather.getDt()*1000));
                 setBackground(weather.getWeather()[0].getId(), weather.getSys().getSunrise() * 1000, weather.getSys().getSunset() * 1000);
                 
 
+
                 //PT FORECAST LAYOUT
-                day2Time.setText(formatHour.format(forecast.getList()[0].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[0].getDt()*1000));
-                day2Temps.setText((int)Math.round(forecast.getList()[0].getMain().getTemp())+"º\n");
 
-                day3Time.setText(formatHour.format(forecast.getList()[1].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[1].getDt()*1000));
-                day3Temps.setText((int)Math.round(forecast.getList()[1].getMain().getTemp())+"º");
+                hour1Time.setText(formatHour.format(forecast.getList()[0].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[0].getDt()*1000));
+                hour1Temps.setText((int)Math.round(forecast.getList()[0].getMain().getTemp())+"º\n");
 
-                day4Time.setText(formatHour.format(forecast.getList()[2].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[2].getDt()*1000));
-                day4Temps.setText((int)Math.round(forecast.getList()[2].getMain().getTemp())+"º");
+                hour2Time.setText(formatHour.format(forecast.getList()[1].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[1].getDt()*1000));
+                hour2Temps.setText((int)Math.round(forecast.getList()[1].getMain().getTemp())+"º");
 
-                day5Time.setText(formatHour.format(forecast.getList()[3].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[3].getDt()*1000));
-                day5Temps.setText((int)Math.round(forecast.getList()[3].getMain().getTemp())+"º\n");
+                hour3Time.setText(formatHour.format(forecast.getList()[2].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[2].getDt()*1000));
+                hour3Temps.setText((int)Math.round(forecast.getList()[2].getMain().getTemp())+"º");
+
+                hour4Time.setText(formatHour.format(forecast.getList()[3].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[3].getDt()*1000));
+                hour4Temps.setText((int)Math.round(forecast.getList()[3].getMain().getTemp())+"º\n");
+
+                hour5Time.setText(formatHour.format(forecast.getList()[4].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[4].getDt()*1000));
+                hour5Temps.setText((int)Math.round(forecast.getList()[4].getMain().getTemp())+"º\n");
 
                 loader.setVisibility(View.GONE);
 

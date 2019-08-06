@@ -249,7 +249,6 @@
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:fadeScrollbars="false"
             android:text="Change City"
@@ -257,20 +256,34 @@
             android:typeface="sans"
             android:background="@drawable/button"
             android:textColor="#fff"
-            android:padding="9dp"/>
+            android:padding="9dp"
+            android:layout_above="@id/last_updated"
+
+            />
 
         <Switch
             android:id="@+id/switch_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_above="@id/last_updated"
             android:layout_alignParentRight="true"
             android:text="Location"
             android:textColor="#fff"
             android:background="@drawable/button"
             android:padding="9dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
+
             />
+
+        <TextView
+            android:id="@+id/last_updated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="last updated"
+            android:layout_alignParentRight="true"
+            android:textColor="#B7FFFFFF"
+            android:padding="3dp"/>
 
         <ProgressBar
             android:id="@+id/progress"
@@ -294,14 +307,14 @@
         android:background="@drawable/forecast_gradient">
 
         <LinearLayout
-            android:id="@+id/day_2"
+            android:id="@+id/hour_1"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/day2_time"
+                android:id="@+id/hour1_time"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -312,7 +325,7 @@
                 />
 
             <TextView
-                android:id="@+id/day2_temps"
+                android:id="@+id/hour1_temps"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -325,14 +338,14 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/day_3"
+            android:id="@+id/hour_2"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/day3_time"
+                android:id="@+id/hour2_time"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -343,7 +356,7 @@
                 />
 
             <TextView
-                android:id="@+id/day3_temps"
+                android:id="@+id/hour2_temps"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -356,14 +369,14 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/day_4"
+            android:id="@+id/hour_3"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/day4_time"
+                android:id="@+id/hour3_time"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -374,7 +387,7 @@
                 />
 
             <TextView
-                android:id="@+id/day4_temps"
+                android:id="@+id/hour3_temps"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -387,14 +400,45 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/day_5"
+        android:id="@+id/hour_4"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/hour4_time"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            />
+
+        <TextView
+            android:id="@+id/hour4_temps"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            />
+
+    </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/hour_5"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/day5_time"
+                android:id="@+id/hour5_time"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -405,15 +449,14 @@
                 />
 
             <TextView
-                android:id="@+id/day5_temps"
+                android:id="@+id/hour5_temps"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@android:color/white"
-                android:textSize="20sp"
                 android:gravity="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                />
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
 
         </LinearLayout>
 
