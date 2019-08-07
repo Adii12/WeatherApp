@@ -28,6 +28,7 @@
         android:textColor="#fff"
         android:textSize="70sp"
         android:paddingBottom="40dp"
+        android:paddingLeft="23dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         />
 

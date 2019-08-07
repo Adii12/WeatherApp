@@ -166,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 city = input.getText().toString();
+                                jsonString="http://api.openweathermap.org/data/2.5/weather?q="+city+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
                                 loadTask(city);
                                 updateWidget();
                             }
