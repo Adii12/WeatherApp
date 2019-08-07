@@ -1,289 +1,360 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="match_parent"
-    android:layout_width="match_parent">
-    <RelativeLayout
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+
+        android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/rainy_gradient"
         android:padding="30dp"
-        android:id="@+id/main_layout">
+        app:layout_constraintStart_toStartOf="@+id/forecast_layout"
+        app:layout_constraintTop_toTopOf="@+id/forecast_layout">
 
 
         <TextView
             android:id="@+id/date_field"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:textSize="30sp"
-            android:textColor="#fff"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
             android:text="25/07"
-            android:layout_marginBottom="-10dp"
-            />
+            android:textColor="#fff"
+            android:textSize="30sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/updated_field"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/date_field"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textStyle="bold"
-            android:textSize="60sp"
+            android:layout_alignTop="@+id/date_field"
+            android:layout_marginStart="16dp"
             android:text="06:00"
+            android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#FFF"
-            android:layout_marginTop="-10dp"/>
+            android:textSize="60sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/date_field" />
 
 
         <TextView
             android:id="@+id/weather_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/updated_field"
+            android:layout_below="@+id/updated_field"
             android:layout_centerHorizontal="true"
-            android:textColor="#FFF"
+            android:layout_marginEnd="8dp"
             android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#FFF"
             android:textSize="200sp"
-            />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/updated_field" />
 
-        <LinearLayout
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/temperatureLayout"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_width="341dp"
+            android:layout_height="125dp"
             android:layout_below="@id/weather_icon"
-            android:showDividers="middle"
+            android:layout_marginEnd="8dp"
             android:divider="@android:color/white"
-            android:layout_marginTop="30dp">
+            android:orientation="horizontal"
+            android:showDividers="middle"
+            app:layout_constraintBottom_toTopOf="@+id/switch_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/weather_icon"
+            app:layout_constraintVertical_bias="0.458">
+
+
+            <TextView
+                android:id="@+id/cityField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+
+                android:layout_marginLeft="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginBottom="4dp"
+                android:gravity="center_vertical"
+                android:text="Targu-Mures, RO"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#FFF"
+                android:textSize="20sp"
+                app:autoSizeMaxTextSize="100sp"
+                app:autoSizeMinTextSize="12sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/temperature_field"
+                app:layout_constraintTop_toBottomOf="@+id/info_field"
+                tools:layout_conversion_absoluteHeight="40dp"
+                tools:layout_conversion_absoluteWidth="150dp"
+                tools:layout_conversion_wrapHeight="71"
+                tools:layout_conversion_wrapWidth="393" />
+
+            <TextView
+                android:id="@+id/info_field"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:text="SCATTERED CLOUDS"
+                android:textAllCaps="true"
+                android:textColor="#e3d594"
+                android:textSize="25sp"
+                app:autoSizeMaxTextSize="100sp"
+                app:autoSizeMinTextSize="12sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform"
+                app:fontFamily="sans-serif-medium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/temperature_field"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_conversion_absoluteHeight="40dp"
+                tools:layout_conversion_absoluteWidth="195dp"
+                tools:layout_conversion_wrapHeight="141"
+                tools:layout_conversion_wrapWidth="0" />
 
             <TextView
                 android:id="@+id/temperature_field"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingRight="10dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
                 android:paddingLeft="10dp"
+                android:paddingRight="10dp"
                 android:text="30º"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="#FFF"
                 android:textSize="70sp"
                 android:visibility="visible"
-                app:fontFamily="sans-serif" />
+                app:fontFamily="sans-serif"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_conversion_absoluteHeight="94dp"
+                tools:layout_conversion_absoluteWidth="130dp"
+                tools:layout_conversion_wrapHeight="247"
+                tools:layout_conversion_wrapWidth="342" />
 
 
-            <LinearLayout
-                android:paddingLeft="10dp"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
-                    android:id="@+id/info_field"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    app:autoSizeTextType="uniform"
-                    app:autoSizeMinTextSize="12sp"
-                    app:autoSizeMaxTextSize="100sp"
-                    app:autoSizeStepGranularity="2sp"
-                    android:textAllCaps="true"
-                    android:textColor="#e3d594"
-                    android:textSize="40sp"
-                    android:maxLines="1"
-                    app:fontFamily="sans-serif-medium" />
-
-                <TextView
-                    android:id="@+id/cityField"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="#FFF"
-                    android:textSize="20sp"
-                    app:autoSizeTextType="uniform"
-                    app:autoSizeMinTextSize="12sp"
-                    app:autoSizeMaxTextSize="100sp"
-                    app:autoSizeStepGranularity="2sp"
-                    android:text="Targu-Mures, RO"
-                    />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/moredetails_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/weather_icon"
-            android:layout_marginTop="30dp"
-            android:orientation="horizontal"
-            android:showDividers="middle"
+            android:layout_below="@+id/weather_icon"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="16dp"
             android:divider="@android:color/white"
-            >
+            android:showDividers="middle"
+            app:layout_constraintBottom_toTopOf="@+id/switch_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/weather_icon">
 
-            <LinearLayout
+
+            <TextView
+                android:id="@+id/humidity_field"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="5dp"
-                app:autoSizeTextType="uniform"
-                app:autoSizeMinTextSize="12sp"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:maxLines="1"
+                android:text="Humidity: "
+                android:textColor="#fff"
+                android:textSize="20sp"
                 app:autoSizeMaxTextSize="100sp"
-                app:autoSizeStepGranularity="2sp">
+                app:autoSizeMinTextSize="4sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform"
+                app:layout_constraintBottom_toTopOf="@+id/pressure_field"
+                app:layout_constraintStart_toStartOf="parent" />
 
-                <TextView
-                    android:id="@+id/humidity_field"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#fff"
-                    android:text="Humidity: "
-                    android:textSize="20sp"
-                    app:autoSizeTextType="uniform"
-                    app:autoSizeMinTextSize="4sp"
-                    app:autoSizeMaxTextSize="100sp"
-                    app:autoSizeStepGranularity="2sp"
-                    android:maxLines="1"
-                    />
-
-                <TextView
-                    android:id="@+id/pressure_field"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#fff"
-                    android:text="Pressure: "
-                    android:textSize="18sp"
-                    app:autoSizeTextType="uniform"
-                    app:autoSizeMinTextSize="4sp"
-                    app:autoSizeMaxTextSize="100sp"
-                    app:autoSizeStepGranularity="2sp"
-                    android:maxLines="1"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
-                    />
-
-                <TextView
-                    android:id="@+id/wind_field"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#fff"
-                    android:text="Wind: "
-                    android:textSize="20sp"
-                    app:autoSizeTextType="uniform"
-                    app:autoSizeMinTextSize="4sp"
-                    app:autoSizeMaxTextSize="100sp"
-                    app:autoSizeStepGranularity="2sp"
-                    android:maxLines="1"
-                    />
-
-            </LinearLayout>
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/pressure_field"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="5dp"
-                app:autoSizeTextType="uniform"
-                app:autoSizeMinTextSize="12sp"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:maxLines="1"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="Pressure: "
+                android:textColor="#fff"
+                android:textSize="18sp"
                 app:autoSizeMaxTextSize="100sp"
-                app:autoSizeStepGranularity="2sp">
+                app:autoSizeMinTextSize="4sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform"
+                app:layout_constraintBottom_toTopOf="@+id/wind_field"
+                app:layout_constraintStart_toStartOf="parent" />
 
-                <TextView
-                    android:id="@+id/maxmin_field"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#fff"
-                    android:text="Max/Min "
-                    android:textSize="15sp"
-                    app:autoSizeTextType="uniform"
-                    app:autoSizeMinTextSize="15sp"
-                    app:autoSizeMaxTextSize="100sp"
-                    app:autoSizeStepGranularity="2sp"
-                    android:maxLines="1"
-
-                    />
-
-                <TextView
-                    android:id="@+id/sunrise_field"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#fff"
-                    android:text="Sunrise: "
-                    android:textSize="20sp"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    app:autoSizeTextType="uniform"
-                    app:autoSizeMinTextSize="4sp"
-                    app:autoSizeMaxTextSize="100sp"
-                    app:autoSizeStepGranularity="2sp"
-                    android:maxLines="1"
-
-                    />
-
-                <TextView
-                    android:id="@+id/sunset_field"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#fff"
-                    android:text="Sunset: "
-                    android:textSize="20sp"
-                    app:autoSizeTextType="uniform"
-                    app:autoSizeMinTextSize="4sp"
-                    app:autoSizeMaxTextSize="100sp"
-                    app:autoSizeStepGranularity="2sp"
-                    android:maxLines="1"
-                    />
-
-            </LinearLayout>
-
-        </LinearLayout>
+            <TextView
+                android:id="@+id/wind_field"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginBottom="3dp"
+                android:maxLines="1"
+                android:text="Wind: "
+                android:textColor="#fff"
+                android:textSize="20sp"
+                app:autoSizeMaxTextSize="100sp"
+                app:autoSizeMinTextSize="4sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
 
+            <TextView
+                android:id="@+id/maxmin_field"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginBottom="1dp"
+                android:maxLines="1"
+                android:text="Max/Min "
+                android:textColor="#fff"
+
+                android:textSize="15sp"
+                app:autoSizeMaxTextSize="100sp"
+                app:autoSizeMinTextSize="15sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform"
+                app:layout_constraintBottom_toTopOf="@+id/sunrise_field"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/humidity_field" />
+
+            <TextView
+                android:id="@+id/sunrise_field"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:maxLines="1"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="Sunrise: "
+
+                android:textColor="#fff"
+                android:textSize="20sp"
+                app:autoSizeMaxTextSize="100sp"
+                app:autoSizeMinTextSize="4sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform"
+                app:layout_constraintBottom_toTopOf="@+id/sunset_field"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/humidity_field" />
+
+            <TextView
+                android:id="@+id/sunset_field"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:maxLines="1"
+                android:text="Sunset: "
+                android:textColor="#fff"
+                android:textSize="20sp"
+                app:autoSizeMaxTextSize="100sp"
+                app:autoSizeMinTextSize="4sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/humidity_field" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         <Button
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:fadeScrollbars="false"
-            android:text="Change City"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:typeface="sans"
-            android:background="@drawable/button"
-            android:textColor="#fff"
-            android:padding="9dp"
             android:layout_above="@id/last_updated"
 
-            />
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/button"
+            android:fadeScrollbars="false"
+            android:padding="9dp"
+            android:text="Change City"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="#fff"
+            android:typeface="sans"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Switch
             android:id="@+id/switch_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@id/last_updated"
-            android:layout_alignParentRight="true"
-            android:text="Location"
-            android:textColor="#fff"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/button"
             android:padding="9dp"
+            android:text="Location"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-
-            />
+            android:textColor="#fff"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/button" />
 
         <TextView
             android:id="@+id/last_updated"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:padding="3dp"
             android:text="last updated"
-            android:layout_alignParentRight="true"
             android:textColor="#B7FFFFFF"
-            android:padding="3dp"/>
+            app:layout_constraintEnd_toEndOf="@+id/switch_button"
+            app:layout_constraintTop_toBottomOf="@+id/switch_button" />
 
         <ProgressBar
             android:id="@+id/progress"
@@ -291,20 +362,31 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/updated_field"
             android:layout_centerHorizontal="true"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginRight="24dp"
             android:indeterminateTint="#fff"
-            />
-    </RelativeLayout>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/updated_field" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <!-- FORECAST LAYOUT-->
+
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:id="@+id/forecast_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@android:color/transparent"
+        android:divider="@android:color/white"
         android:orientation="vertical"
         android:showDividers="middle"
-        android:divider="@android:color/white"
-        android:background="@drawable/forecast_gradient">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:id="@+id/hour_1"
@@ -318,22 +400,20 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@android:color/white"
-                android:textSize="20sp"
                 android:gravity="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                />
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/hour1_temps"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@android:color/white"
-                android:textSize="20sp"
                 android:gravity="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                />
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
 
         </LinearLayout>
 
@@ -349,22 +429,20 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@android:color/white"
-                android:textSize="20sp"
                 android:gravity="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                />
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/hour2_temps"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@android:color/white"
-                android:textSize="20sp"
                 android:gravity="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                />
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
 
         </LinearLayout>
 
@@ -380,55 +458,51 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@android:color/white"
-                android:textSize="20sp"
                 android:gravity="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                />
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/hour3_temps"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@android:color/white"
-                android:textSize="20sp"
                 android:gravity="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                />
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
 
         </LinearLayout>
 
         <LinearLayout
-        android:id="@+id/hour_4"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/hour4_time"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:id="@+id/hour_4"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:textColor="@android:color/white"
-            android:textSize="20sp"
-            android:gravity="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            />
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/hour4_temps"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:textColor="@android:color/white"
-            android:textSize="20sp"
-            android:gravity="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            />
+            <TextView
+                android:id="@+id/hour4_time"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/hour4_temps"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/hour_5"
@@ -442,11 +516,10 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@android:color/white"
-                android:textSize="20sp"
                 android:gravity="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                />
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/hour5_temps"
@@ -461,10 +534,9 @@
         </LinearLayout>
 
 
-
     </LinearLayout>
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 
 
