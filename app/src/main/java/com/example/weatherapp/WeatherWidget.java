@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,6 +30,8 @@ public class WeatherWidget extends AppWidgetProvider {
         String SP_WEATHER = "SP_WEATHER";//adauga in app
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM");
+        SimpleDateFormat LongDate = new SimpleDateFormat("dd/MM HH:mm");
+
         Date date  = new Date(System.currentTimeMillis());
 
         SharedPreferences sharedPreferences = context.getSharedPreferences(SP_WEATHER, Context.MODE_PRIVATE);
@@ -53,7 +56,9 @@ public class WeatherWidget extends AppWidgetProvider {
                 views.setTextViewText(R.id.city,weather.getName());
                 views.setTextViewText(R.id.info, weather.getWeather()[0].getDescription());
                 views.setTextViewText(R.id.date, sdf.format(date));
+                views.setTextViewText(R.id.time_updated,"last updated: "+LongDate.format(weather.getDt()*1000));
 
+                
                 // Instruct the widget manager to update the widget
                 appWidgetManager.updateAppWidget(appWidgetId, views);
             }
@@ -65,21 +70,7 @@ public class WeatherWidget extends AppWidgetProvider {
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
 
-            try{
-                Intent intent = new Intent("android.intent.action.MAIN");
-                intent.addCategory("android.intent.category.LAUNCHER");
-
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                intent.setComponent(new ComponentName(context.getPackageName(),"MainActivity.class"));
-
-                PendingIntent pendingIntent = PendingIntent.getActivity(context,0,intent,0);
-
-                RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.weather_widget);
-                views.setOnClickPendingIntent(R.id.temperature, pendingIntent);
-                updateAppWidget(context, appWidgetManager, appWidgetId);
-            }catch (ActivityNotFoundException e){
-                Toast.makeText(context.getApplicationContext(), "Problem loading the appliaction", Toast.LENGTH_SHORT).show();
-            }
+            updateAppWidget(context, appWidgetManager, appWidgetId);
 
         }
 

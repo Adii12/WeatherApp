@@ -13,7 +13,6 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.text.Html;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -44,15 +43,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     ProgressBar loader;
@@ -63,24 +56,21 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout temperatureLayout, moreDetailsLayout;
     RelativeLayout mainLayout;
     LinearLayout forecastLayout;
-    Animation in_left,in_right,out_left,out_right,in_up,in_down,out_down, out_up;
+    Animation in_left, in_right, out_left, out_right, in_up, in_down, out_down, out_up;
     Switch switchButton;
 
-
-    double longitude, latitude;
-
-    String city="targu-mures";
-
-
-    String SP_WEATHER = "SP_WEATHER"; //adauga in app
+    String city = "targu-mures";
 
     String jsonString;
     String jsonForecast;
 
+    String SP_WEATHER = "SP_WEATHER"; //adauga in app
     SharedPreferences sharedPreferences; //adauga in app
 
     GPSTracker gps;
+    double longitude, latitude;
 
+    @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,54 +82,53 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);//notification bar transparent
 
 
-
-        jsonString="http://api.openweathermap.org/data/2.5/weather?q="+city+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
-        jsonForecast="http://api.openweathermap.org/data/2.5/forecast?q="+city+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
+        jsonString = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=metric&appid=2397cac5640f1ba782245157aab0343b";
+        jsonForecast = "http://api.openweathermap.org/data/2.5/forecast?q=" + city + "&units=metric&appid=2397cac5640f1ba782245157aab0343b";
         sharedPreferences = getSharedPreferences(SP_WEATHER, MODE_PRIVATE);
 
         switchButton = findViewById(R.id.switch_button);
         lastUpdated = findViewById(R.id.last_updated);
 
-        in_left= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.in_left);//IN de la dreapta la stanga
-        in_right= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.in_right);//IN de la stanga la dreapta
-        in_up=AnimationUtils.loadAnimation(getApplicationContext(),R.anim.in_up);//IN de jos in sus
-        in_down=AnimationUtils.loadAnimation(getApplicationContext(),R.anim.in_down);//IN de sus in jos
-        out_left= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.out_left);//OUT de la dreapta la stanga
-        out_right= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.out_right);//OUT de la stanga la dreapta
-        out_up=AnimationUtils.loadAnimation(getApplicationContext(),R.anim.out_up);//OUT de jos in sus
-        out_down=AnimationUtils.loadAnimation(getApplicationContext(),R.anim.out_down);//OUT de sus in jos
+        in_left = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.in_left);//IN de la dreapta la stanga
+        in_right = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.in_right);//IN de la stanga la dreapta
+        in_up = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.in_up);//IN de jos in sus
+        in_down = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.in_down);//IN de sus in jos
+        out_left = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.out_left);//OUT de la dreapta la stanga
+        out_right = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.out_right);//OUT de la stanga la dreapta
+        out_up = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.out_up);//OUT de jos in sus
+        out_down = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.out_down);//OUT de sus in jos
 
-        temperatureLayout=findViewById(R.id.temperatureLayout);
-        moreDetailsLayout=findViewById(R.id.moredetails_layout);
-        mainLayout=findViewById(R.id.main_layout);
-        forecastLayout=findViewById(R.id.forecast_layout);
+        temperatureLayout = findViewById(R.id.temperatureLayout);
+        moreDetailsLayout = findViewById(R.id.moredetails_layout);
+        mainLayout = findViewById(R.id.main_layout);
+        forecastLayout = findViewById(R.id.forecast_layout);
 
-        dateField=findViewById(R.id.date_field);
-        cityField=findViewById(R.id.cityField);
-        updateField=findViewById(R.id.updated_field);
-        weatherIcon=findViewById(R.id.weather_icon);
-        currentTemperature=findViewById(R.id.temperature_field);
-        selectCity=findViewById(R.id.button);
-        loader=findViewById(R.id.progress);
-        infoField=findViewById(R.id.info_field);
+        dateField = findViewById(R.id.date_field);
+        cityField = findViewById(R.id.cityField);
+        updateField = findViewById(R.id.updated_field);
+        weatherIcon = findViewById(R.id.weather_icon);
+        currentTemperature = findViewById(R.id.temperature_field);
+        selectCity = findViewById(R.id.button);
+        loader = findViewById(R.id.progress);
+        infoField = findViewById(R.id.info_field);
 
-        humidityField=findViewById(R.id.humidity_field);
-        pressureField=findViewById(R.id.pressure_field);
-        windField=findViewById(R.id.wind_field);
-        maxminField=findViewById(R.id.maxmin_field);
-        sunriseField=findViewById(R.id.sunrise_field);
-        sunsetField=findViewById(R.id.sunset_field);
+        humidityField = findViewById(R.id.humidity_field);
+        pressureField = findViewById(R.id.pressure_field);
+        windField = findViewById(R.id.wind_field);
+        maxminField = findViewById(R.id.maxmin_field);
+        sunriseField = findViewById(R.id.sunrise_field);
+        sunsetField = findViewById(R.id.sunset_field);
 
-        hour1Time=findViewById(R.id.hour1_time);
-        hour1Temps=findViewById(R.id.hour1_temps);
-        hour2Time=findViewById(R.id.hour2_time);
-        hour2Temps=findViewById(R.id.hour2_temps);
-        hour3Time=findViewById(R.id.hour3_time);
-        hour3Temps=findViewById(R.id.hour3_temps);
-        hour4Time=findViewById(R.id.hour4_time);
-        hour4Temps=findViewById(R.id.hour4_temps);
-        hour5Time=findViewById(R.id.hour5_time);
-        hour5Temps=findViewById(R.id.hour5_temps);
+        hour1Time = findViewById(R.id.hour1_time);
+        hour1Temps = findViewById(R.id.hour1_temps);
+        hour2Time = findViewById(R.id.hour2_time);
+        hour2Temps = findViewById(R.id.hour2_temps);
+        hour3Time = findViewById(R.id.hour3_time);
+        hour3Temps = findViewById(R.id.hour3_temps);
+        hour4Time = findViewById(R.id.hour4_time);
+        hour4Temps = findViewById(R.id.hour4_temps);
+        hour5Time = findViewById(R.id.hour5_time);
+        hour5Temps = findViewById(R.id.hour5_temps);
 
         weatherFont = getResources().getFont(R.font.icons);
         weatherIcon.setTypeface(weatherFont);
@@ -148,9 +137,9 @@ public class MainActivity extends AppCompatActivity {
         forecastLayout.setVisibility(View.GONE);
         loadTask(city);
 
-        selectCity.setOnClickListener(new View.OnClickListener(){
+        selectCity.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
                 alert.setTitle("Change city");
 
@@ -166,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 city = input.getText().toString();
-                                jsonString="http://api.openweathermap.org/data/2.5/weather?q="+city+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
+                                jsonString = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=metric&appid=2397cac5640f1ba782245157aab0343b";
                                 loadTask(city);
                                 updateWidget();
                             }
@@ -184,40 +173,40 @@ public class MainActivity extends AppCompatActivity {
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
 
-                    if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 50);
                     }
                     gps = new GPSTracker(MainActivity.this, MainActivity.this);
 
-                    if(gps.CanGetLocation()){
+                    if (gps.CanGetLocation()) {
                         latitude = gps.getLatitude();
                         longitude = gps.getLongitude();
 
-                        Toast.makeText(getApplicationContext(), "LAT="+latitude+"\nLON="+longitude, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "LAT=" + latitude + "\nLON=" + longitude, Toast.LENGTH_LONG).show();
                     }
-                    jsonString="http://api.openweathermap.org/data/2.5/weather?lat="+latitude+"&lon="+longitude+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
-                    jsonForecast="http://api.openweathermap.org/data/2.5/forecast?lat="+latitude+"&lon="+longitude+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
+                    jsonString = "http://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&appid=2397cac5640f1ba782245157aab0343b";
+                    jsonForecast = "http://api.openweathermap.org/data/2.5/forecast?lat=" + latitude + "&lon=" + longitude + "&units=metric&appid=2397cac5640f1ba782245157aab0343b";
                     loadTask(city);
-                }else{
+                } else {
                     Toast.makeText(getApplicationContext(), "Location disabled", Toast.LENGTH_SHORT).show();
-                    jsonString="http://api.openweathermap.org/data/2.5/weather?q="+city+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
-                    jsonForecast="http://api.openweathermap.org/data/2.5/forecast?q="+city+"&units=metric&appid=2397cac5640f1ba782245157aab0343b";
+                    jsonString = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=metric&appid=2397cac5640f1ba782245157aab0343b";
+                    jsonForecast = "http://api.openweathermap.org/data/2.5/forecast?q=" + city + "&units=metric&appid=2397cac5640f1ba782245157aab0343b";
                     loadTask(city);
                 }
             }
         });
 
-        weatherIcon.setOnTouchListener(new OnSwipeTouchListener(this){
+        weatherIcon.setOnTouchListener(new OnSwipeTouchListener(this) {
             @Override
-            public void onSwipeBottom(){
+            public void onSwipeBottom() {
                 super.onSwipeBottom();
                 loadTask(city);
             }
         });
 
-        temperatureLayout.setOnTouchListener(new OnSwipeTouchListener(this){
+        temperatureLayout.setOnTouchListener(new OnSwipeTouchListener(this) {
             @Override
             public void onSwipeLeft() {
                 super.onSwipeLeft();
@@ -229,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        moreDetailsLayout.setOnTouchListener(new OnSwipeTouchListener(this){
+        moreDetailsLayout.setOnTouchListener(new OnSwipeTouchListener(this) {
             @Override
             public void onSwipeRight() {
                 super.onSwipeRight();
@@ -241,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mainLayout.setOnTouchListener(new OnSwipeTouchListener(this){
+        mainLayout.setOnTouchListener(new OnSwipeTouchListener(this) {
             @Override
             public void onSwipeTop() {
                 super.onSwipeTop();
@@ -253,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        forecastLayout.setOnTouchListener(new OnSwipeTouchListener(this){
+        forecastLayout.setOnTouchListener(new OnSwipeTouchListener(this) {
             @Override
             public void onSwipeBottom() {
                 super.onSwipeBottom();
@@ -267,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         Toast.makeText(MainActivity.this, "Refreshing...", Toast.LENGTH_SHORT).show();
         loadTask(city);
@@ -275,24 +264,70 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void loadTask(String city_name){
-        if(Function.isNetworkAvailable(getApplicationContext())) {
+    public void loadTask(String city_name) {
+        if (Function.isNetworkAvailable(getApplicationContext())) {
             getWeather task = new getWeather();
             task.execute(city_name);
-        }
-        else{
+        } else {
             Toast.makeText(getApplicationContext(), "No Internet Connection!", Toast.LENGTH_LONG).show();
         }
     }
 
+    public void setBackground(int actualId, long sunrise, long sunset) {
+        int id = actualId / 100;
+        long currentTime = new Date().getTime();
 
-    class getWeather extends AsyncTask<String, Void, String>{
+        if (currentTime >= sunrise && currentTime < sunset) {
+            if (actualId == 800) {
+                mainLayout.setBackgroundResource(R.drawable.sunny_gradient); //sunny
+            } else {
+                switch (id) {
+                    case 2:
+                        mainLayout.setBackgroundResource(R.drawable.rainy_gradient); //thunderstorm
+                        break;
+
+                    case 3:
+                        mainLayout.setBackgroundResource(R.drawable.rainy_gradient); //drizzle
+                        break;
+
+                    case 5:
+                        mainLayout.setBackgroundResource(R.drawable.rainy_gradient); //rain
+                        break;
+
+                    case 6:
+                        mainLayout.setBackgroundResource(R.drawable.snowy_gradient); //snow
+                        break;
+
+                    case 7:
+                        mainLayout.setBackgroundResource(R.drawable.rainy_gradient); //fog
+                        break;
+
+                    case 8:
+                        mainLayout.setBackgroundResource(R.drawable.gradient); //cloudy
+                        break;
+                }
+
+            }
+        } else {
+            mainLayout.setBackgroundResource(R.drawable.night_gradient); //night
+        }
+    }
+
+    private void updateWidget() {
+        Intent intent = new Intent(this, WeatherWidget.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        int[] ids = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), WeatherWidget.class));
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        sendBroadcast(intent);
+    }
+
+    class getWeather extends AsyncTask<String, Void, String> {
 
         WeatherJSON weather = new WeatherJSON();
         Forecast forecast = new Forecast();
 
         @Override
-        protected void onPreExecute(){
+        protected void onPreExecute() {
             super.onPreExecute();
             loader.setVisibility(View.VISIBLE);
             cityField.setText("Loading...");
@@ -302,24 +337,24 @@ public class MainActivity extends AppCompatActivity {
 
 
         @SuppressLint("ApplySharedPref")
-        protected String doInBackground(String...args){
+        protected String doInBackground(String... args) {
 
             String json = Function.getConnection(jsonString);
-            String forecastString =Function.getConnection(jsonForecast);
-            Log.d("debug", "FORECAST="+forecastString);
+            String forecastString = Function.getConnection(jsonForecast);
+            Log.d("debug", "FORECAST=" + forecastString);
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
             sharedPreferences.edit().putString("WEATHER_JSON_STRING", json).commit();
 
-            try{
-                weather = mapper.readValue(json,WeatherJSON.class);
-                forecast = mapper.readValue(forecastString,Forecast.class);
-            }catch (JsonParseException e){
+            try {
+                weather = mapper.readValue(json, WeatherJSON.class);
+                forecast = mapper.readValue(forecastString, Forecast.class);
+            } catch (JsonParseException e) {
                 e.printStackTrace();
-            }catch (JsonMappingException e){
+            } catch (JsonMappingException e) {
                 e.printStackTrace();
-            }catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
@@ -328,12 +363,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+        @SuppressLint("SetTextI18n")
         @Override
-        protected void onPostExecute(String jsonString){
-            if(weather.getMain()==null){//ca sa nu mai dea crash daca orasul nu exista(null pointer)
-                Toast.makeText(getApplicationContext(),"Error. Wrong city name",Toast.LENGTH_LONG).show();
-            }
-            else {
+        protected void onPostExecute(String jsonString) {
+            if (weather.getMain() == null) {//ca sa nu mai dea crash daca orasul nu exista(null pointer)
+                Toast.makeText(getApplicationContext(), "Error. Wrong city name", Toast.LENGTH_LONG).show();
+            } else {
                 int temp = (int) Math.round(weather.getMain().getTemp());
                 int temp_min = (int) Math.round(weather.getMain().getTemp_min());
                 int temp_max = (int) Math.round(weather.getMain().getTemp_max());
@@ -362,27 +397,26 @@ public class MainActivity extends AppCompatActivity {
                 maxminField.setText("Min/Max: " + temp_min + "/" + temp_max + "º");
                 sunriseField.setText("Sunrise: " + formatHour.format(weather.getSys().getSunrise() * 1000));
                 sunsetField.setText("Sunset: " + formatHour.format(weather.getSys().getSunset() * 1000));
-                lastUpdated.setText("Last Updated: "+longDate.format(weather.getDt()*1000));
+                lastUpdated.setText("Last Updated: " + longDate.format(weather.getDt() * 1000));
                 setBackground(weather.getWeather()[0].getId(), weather.getSys().getSunrise() * 1000, weather.getSys().getSunset() * 1000);
-                
 
 
                 //PT FORECAST LAYOUT
 
-                hour1Time.setText(formatHour.format(forecast.getList()[0].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[0].getDt()*1000));
-                hour1Temps.setText((int)Math.round(forecast.getList()[0].getMain().getTemp())+"º\n");
+                hour1Time.setText(formatHour.format(forecast.getList()[0].getDt() * 1000) + "\n" + formatDate.format(forecast.getList()[0].getDt() * 1000));
+                hour1Temps.setText((int) Math.round(forecast.getList()[0].getMain().getTemp()) + "º\n");
 
-                hour2Time.setText(formatHour.format(forecast.getList()[1].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[1].getDt()*1000));
-                hour2Temps.setText((int)Math.round(forecast.getList()[1].getMain().getTemp())+"º");
+                hour2Time.setText(formatHour.format(forecast.getList()[1].getDt() * 1000) + "\n" + formatDate.format(forecast.getList()[1].getDt() * 1000));
+                hour2Temps.setText((int) Math.round(forecast.getList()[1].getMain().getTemp()) + "º");
 
-                hour3Time.setText(formatHour.format(forecast.getList()[2].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[2].getDt()*1000));
-                hour3Temps.setText((int)Math.round(forecast.getList()[2].getMain().getTemp())+"º");
+                hour3Time.setText(formatHour.format(forecast.getList()[2].getDt() * 1000) + "\n" + formatDate.format(forecast.getList()[2].getDt() * 1000));
+                hour3Temps.setText((int) Math.round(forecast.getList()[2].getMain().getTemp()) + "º");
 
-                hour4Time.setText(formatHour.format(forecast.getList()[3].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[3].getDt()*1000));
-                hour4Temps.setText((int)Math.round(forecast.getList()[3].getMain().getTemp())+"º\n");
+                hour4Time.setText(formatHour.format(forecast.getList()[3].getDt() * 1000) + "\n" + formatDate.format(forecast.getList()[3].getDt() * 1000));
+                hour4Temps.setText((int) Math.round(forecast.getList()[3].getMain().getTemp()) + "º\n");
 
-                hour5Time.setText(formatHour.format(forecast.getList()[4].getDt()*1000)+"\n"+formatDate.format(forecast.getList()[4].getDt()*1000));
-                hour5Temps.setText((int)Math.round(forecast.getList()[4].getMain().getTemp())+"º\n");
+                hour5Time.setText(formatHour.format(forecast.getList()[4].getDt() * 1000) + "\n" + formatDate.format(forecast.getList()[4].getDt() * 1000));
+                hour5Temps.setText((int) Math.round(forecast.getList()[4].getMain().getTemp()) + "º\n");
 
                 loader.setVisibility(View.GONE);
 
@@ -392,63 +426,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void setBackground(int actualId, long sunrise, long sunset){
-        int id = actualId/100;
-        long currentTime=new Date().getTime();
-
-        if(currentTime>=sunrise && currentTime<sunset){
-            if(actualId==800) {
-                mainLayout.setBackgroundResource(R.drawable.sunny_gradient); //sunny
-            }
-            else{
-                switch (id){
-                    case 2:
-                        mainLayout.setBackgroundResource(R.drawable.rainy_gradient); //thunderstorm
-                        break;
-
-                    case 3:
-                        mainLayout.setBackgroundResource(R.drawable.rainy_gradient); //drizzle
-                        break;
-
-                    case 5:
-                        mainLayout.setBackgroundResource(R.drawable.rainy_gradient); //rain
-                        break;
-
-                    case 6:
-                        mainLayout.setBackgroundResource(R.drawable.snowy_gradient); //snow
-                        break;
-
-                    case 7:
-                        mainLayout.setBackgroundResource(R.drawable.rainy_gradient); //fog
-                        break;
-
-                    case 8:
-                        mainLayout.setBackgroundResource(R.drawable.gradient); //cloudy
-                        break;
-                }
-
-            }
-        }
-        else{
-            mainLayout.setBackgroundResource(R.drawable.night_gradient); //night
-        }
-    }
-
-    private void updateWidget() {
-        Intent intent = new Intent(this, WeatherWidget.class);
-        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        int[] ids = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), WeatherWidget.class));
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
-        sendBroadcast(intent);
-    }
-
 }
 
 class OnSwipeTouchListener implements View.OnTouchListener {
 
     private final GestureDetector gestureDetector;
 
-    public OnSwipeTouchListener (Context ctx){
+    public OnSwipeTouchListener(Context ctx) {
         gestureDetector = new GestureDetector(ctx, new GestureListener());
     }
 
@@ -457,6 +441,17 @@ class OnSwipeTouchListener implements View.OnTouchListener {
         return gestureDetector.onTouchEvent(event);
     }
 
+    public void onSwipeRight() {
+    }
+
+    public void onSwipeLeft() {
+    }
+
+    public void onSwipeTop() {
+    }
+
+    public void onSwipeBottom() {
+    }
 
     private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
@@ -490,8 +485,7 @@ class OnSwipeTouchListener implements View.OnTouchListener {
                         }
                         result = true;
                     }
-                }
-                else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                } else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
                     if (diffY > 0) {
                         onSwipeBottom();
                     } else {
@@ -504,16 +498,5 @@ class OnSwipeTouchListener implements View.OnTouchListener {
             }
             return result;
         }
-    }
-
-    public void onSwipeRight() {
-    }
-
-    public void onSwipeLeft() {
-    }
-
-    public void onSwipeTop() {
-    }
-    public void onSwipeBottom() {
     }
 }

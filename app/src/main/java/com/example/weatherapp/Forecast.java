@@ -24,13 +24,12 @@ public class Forecast {
     }
 }
 
-class List{
+class List {
 
     private long dt;
     private MainForecast main;
     private String dt_txt;
     private ForecastWeather[] weather;
-
 
 
     public ForecastWeather[] getForecastWeather() {
@@ -42,7 +41,6 @@ class List{
     }
 
 
-
     public long getDt() {
         return dt;
     }
@@ -50,7 +48,6 @@ class List{
     public void setDt(long dt) {
         this.dt = dt;
     }
-
 
 
     public MainForecast getMain() {
@@ -62,8 +59,6 @@ class List{
     }
 
 
-
-
     public String getDt_txt() {
         return dt_txt;
     }
@@ -73,7 +68,7 @@ class List{
     }
 }
 
-class MainForecast{
+class MainForecast {
     private double temp;
 
 
@@ -83,12 +78,12 @@ class MainForecast{
 
     @Override
     public String toString() {
-        return ""+temp;
+        return "" + temp;
     }
 }
 
 
-class ForecastWeather{
+class ForecastWeather {
     @JsonProperty("description")
     private String description;
 
@@ -96,7 +91,7 @@ class ForecastWeather{
         return description;
     }
 
-    public void setDescription(String description){
-        this.description=description;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

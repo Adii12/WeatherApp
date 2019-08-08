@@ -59,9 +59,17 @@
         android:textSize="20dp"
         android:textAllCaps="true"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        />
 
-
-
+    <TextView
+        android:id="@+id/time_updated"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:textSize="15dp"
+        android:paddingBottom="10dp"
+        android:textColor="#B4FFFFFF"
         />
 
 </RelativeLayout>
